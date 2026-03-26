@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Affairs — Israel, US & Iran</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --israel: #2563eb; --us: #dc2626; --iran: #16a34a;
+    --bg: #f8f7f4; --card: #ffffff; --text: #1a1a2e;
+    --muted: #6b7280; --border: #e5e7eb; --radius: 16px;
+  }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+  .hero {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%);
+    color: white; padding: 48px 24px 40px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(59,130,246,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(220,38,38,0.1) 0%, transparent 60%);
+  }
+  .hero-badge { display:inline-block; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:20px; padding:6px 16px; font-size:0.82rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:16px; position:relative; }
+  .hero h1 { font-size:clamp(1.8rem,5vw,2.8rem); font-weight:800; margin-bottom:10px; position:relative; }
+  .hero p { font-size:1.05rem; opacity:0.85; max-width:560px; margin:0 auto; position:relative; }
+  .hero-flags { display:flex; justify-content:center; gap:16px; margin-top:24px; position:relative; flex-wrap:wrap; }
+  .flag-chip { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:30px; padding:7px 18px; font-size:0.95rem; font-weight:700; }
+
+  .page { max-width:840px; margin:0 auto; padding:32px 20px 60px; }
+
+  .section-label { display:flex; align-items:center; gap:10px; font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:14px; margin-top:36px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+  h2 { font-size:1.45rem; font-weight:800; margin-bottom:14px; color:var(--text); }
+  h3 { font-size:1.1rem; font-weight:700; margin-bottom:8px; color:var(--text); }
+  p { font-size:1rem; color:#374151; margin-bottom:12px; }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; margin-bottom:18px; }
+
+  .analogy-box { background:#fef9c3; border:1.5px solid #fde047; border-radius:var(--radius); padding:18px 22px; margin-bottom:24px; display:flex; gap:14px; align-items:flex-start; }
+  .analogy-icon { font-size:1.8rem; flex-shrink:0; }
+  .analogy-box p { margin:0; color:#713f12; font-size:0.97rem; }
+
+  /* Country cards */
+  .country-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:24px; }
+  .country-card { border-radius:var(--radius); padding:20px 18px; border:2px solid; }
+  .country-card.israel { border-color:#3b82f6; background:#eff6ff; }
+  .country-card.usa    { border-color:#ef4444; background:#fef2f2; }
+  .country-card.iran   { border-color:#22c55e; background:#f0fdf4; }
+  .country-flag { font-size:2.2rem; margin-bottom:8px; }
+  .country-name { font-size:1.1rem; font-weight:800; margin-bottom:6px; }
+  .country-card.israel .country-name { color:#1d4ed8; }
+  .country-card.usa .country-name    { color:#b91c1c; }
+  .country-card.iran .country-name   { color:#15803d; }
+  .country-fact { display:flex; gap:7px; margin-bottom:5px; align-items:flex-start; }
+  .fact-icon { font-size:0.85rem; flex-shrink:0; margin-top:3px; }
+  .fact-text { font-size:0.88rem; color:#374151; }
+
+  /* Map */
+  .map-container { background:#e0f2fe; border:1px solid #bae6fd; border-radius:var(--radius); padding:18px; margin-bottom:24px; text-align:center; }
+  .map-title { font-size:0.82rem; font-weight:700; color:#0369a1; margin-bottom:14px; text-transform:uppercase; letter-spacing:1px; }
+
+  /* Timeline */
+  .timeline { position:relative; margin-bottom:24px; }
+  .timeline::before { content:''; position:absolute; left:38px; top:0; bottom:0; width:3px; background:var(--border); border-radius:2px; }
+  .tl-item { display:flex; gap:0; margin-bottom:6px; position:relative; }
+  .tl-dot-wrap { width:76px; flex-shrink:0; display:flex; justify-content:center; align-items:flex-start; padding-top:13px; position:relative; z-index:1; }
+  .tl-dot { width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 0 0 2px currentColor; flex-shrink:0; }
+  .tl-dot.blue   { background:#3b82f6; color:#3b82f6; }
+  .tl-dot.red    { background:#ef4444; color:#ef4444; }
+  .tl-dot.green  { background:#22c55e; color:#22c55e; }
+  .tl-dot.amber  { background:#f59e0b; color:#f59e0b; }
+  .tl-dot.purple { background:#8b5cf6; color:#8b5cf6; }
+  .tl-dot.pink   { background:#ec4899; color:#ec4899; }
+  .tl-content { flex:1; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:13px 16px; }
+  .tl-year { font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
+  .tl-year.blue   { color:#2563eb; }
+  .tl-year.red    { color:#dc2626; }
+  .tl-year.green  { color:#16a34a; }
+  .tl-year.amber  { color:#d97706; }
+  .tl-year.purple { color:#7c3aed; }
+  .tl-year.pink   { color:#db2777; }
+  .tl-title { font-size:0.98rem; font-weight:700; margin-bottom:4px; color:var(--text); }
+  .tl-desc  { font-size:0.88rem; color:#4b5563; margin:0; line-height:1.6; }
+
+  /* Proxy group cards */
+  .proxy-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:20px; }
+  .proxy-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; }
+  .proxy-flag { font-size:1.4rem; margin-bottom:6px; }
+  .proxy-name { font-size:0.92rem; font-weight:800; color:#1d4ed8; margin-bottom:3px; }
+  .proxy-where { font-size:0.78rem; color:var(--muted); margin-bottom:6px; }
+  .proxy-desc { font-size:0.82rem; color:#374151; }
+
+  /* Wants */
+  .wants-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:24px; }
+  .wants-card { border-radius:var(--radius); padding:18px; border:1.5px solid; }
+  .wants-card.israel { border-color:#93c5fd; background:#eff6ff; }
+  .wants-card.usa    { border-color:#fca5a5; background:#fef2f2; }
+  .wants-card.iran   { border-color:#86efac; background:#f0fdf4; }
+  .wants-title { font-size:0.98rem; font-weight:800; margin-bottom:8px; }
+  .wants-card.israel .wants-title { color:#1d4ed8; }
+  .wants-card.usa .wants-title    { color:#b91c1c; }
+  .wants-card.iran .wants-title   { color:#15803d; }
+  .want-item { display:flex; gap:7px; margin-bottom:6px; align-items:flex-start; }
+  .want-bullet { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:7px; }
+  .israel .want-bullet { background:#3b82f6; }
+  .usa    .want-bullet { background:#ef4444; }
+  .iran   .want-bullet { background:#22c55e; }
+  .want-text { font-size:0.88rem; color:#374151; }
+
+  /* Info boxes */
+  .info-box { border-radius:12px; padding:14px 18px; margin-bottom:12px; display:flex; gap:12px; align-items:flex-start; }
+  .info-box.blue   { background:#eff6ff; border-left:4px solid #3b82f6; }
+  .info-box.red    { background:#fef2f2; border-left:4px solid #ef4444; }
+  .info-box.green  { background:#f0fdf4; border-left:4px solid #22c55e; }
+  .info-box.amber  { background:#fffbeb; border-left:4px solid #f59e0b; }
+  .info-box.purple { background:#f5f3ff; border-left:4px solid #8b5cf6; }
+  .info-box.pink   { background:#fdf2f8; border-left:4px solid #ec4899; }
+  .info-box-icon { font-size:1.3rem; flex-shrink:0; }
+  .info-box-title { font-weight:700; font-size:0.92rem; margin-bottom:3px; color:var(--text); }
+  .info-box-text  { font-size:0.88rem; color:#374151; margin:0; }
+
+  /* Nuclear visual */
+  .nuke-visual { display:flex; border-radius:12px; overflow:hidden; margin-bottom:12px; border:1px solid var(--border); }
+  .nuke-step { flex:1; padding:14px 10px; text-align:center; border-right:1px solid var(--border); }
+  .nuke-step:last-child { border-right:none; }
+  .nuke-step.s1 { background:#f0fdf4; }
+  .nuke-step.s2 { background:#fffbeb; }
+  .nuke-step.s3 { background:#fef2f2; }
+  .nuke-icon { font-size:1.5rem; margin-bottom:4px; }
+  .nuke-label { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
+  .nuke-val { font-size:1.05rem; font-weight:800; }
+  .nuke-step.s1 .nuke-val { color:#15803d; }
+  .nuke-step.s2 .nuke-val { color:#b45309; }
+  .nuke-step.s3 .nuke-val { color:#dc2626; }
+  .nuke-desc { font-size:0.75rem; color:var(--muted); margin-top:3px; }
+
+  /* Hormuz visual */
+  .hormuz-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin:14px 0 18px; }
+  .hstat { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; text-align:center; }
+  .hstat-val { font-size:1.5rem; font-weight:800; color:#0369a1; }
+  .hstat-lbl { font-size:0.75rem; color:var(--muted); margin-top:3px; text-transform:uppercase; letter-spacing:1px; }
+
+  /* Impact table */
+  .impact-table { width:100%; border-collapse:collapse; margin-bottom:16px; font-size:0.88rem; }
+  .impact-table th { background:#f3f4f6; padding:9px 12px; text-align:left; font-weight:700; font-size:0.78rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); border-bottom:1px solid var(--border); }
+  .impact-table td { padding:9px 12px; border-bottom:1px solid #f3f4f6; vertical-align:top; }
+  .impact-table tr:last-child td { border-bottom:none; }
+  .badge { display:inline-block; font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px; }
+  .badge.red    { background:#fee2e2; color:#b91c1c; }
+  .badge.amber  { background:#fef3c7; color:#b45309; }
+  .badge.green  { background:#dcfce7; color:#15803d; }
+
+  /* Quiz */
+  .quiz-section { background:linear-gradient(135deg,#1e3a5f 0%,#0f2027 100%); border-radius:20px; padding:30px 22px; margin-top:40px; color:white; }
+  .quiz-header { text-align:center; margin-bottom:24px; }
+  .quiz-header h2 { color:#fbbf24; font-size:1.5rem; margin-bottom:5px; }
+  .quiz-header p  { color:rgba(255,255,255,0.72); font-size:0.92rem; }
+  .quiz-progress-wrap { background:rgba(255,255,255,0.1); border-radius:6px; height:5px; margin-bottom:18px; }
+  .quiz-progress-bar  { height:100%; border-radius:6px; background:#fbbf24; transition:width 0.4s ease; }
+  .quiz-q { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14); border-radius:14px; padding:18px 20px; margin-bottom:12px; }
+  .quiz-q-text { font-size:0.98rem; font-weight:700; margin-bottom:12px; color:white; }
+  .quiz-options { display:flex; flex-direction:column; gap:7px; }
+  .quiz-opt { background:rgba(255,255,255,0.06); border:1.5px solid rgba(255,255,255,0.14); border-radius:10px; padding:10px 14px; font-family:'Nunito',sans-serif; font-size:0.9rem; color:rgba(255,255,255,0.88); cursor:pointer; text-align:left; transition:all 0.18s; display:flex; align-items:center; gap:9px; }
+  .quiz-opt:hover:not(:disabled) { background:rgba(255,255,255,0.13); border-color:rgba(255,255,255,0.38); transform:translateX(3px); }
+  .quiz-opt.correct { background:rgba(34,197,94,0.22); border-color:#22c55e; color:#86efac; }
+  .quiz-opt.wrong   { background:rgba(239,68,68,0.18); border-color:#ef4444; color:#fca5a5; }
+  .opt-letter { width:24px; height:24px; border-radius:50%; border:1.5px solid currentColor; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0; }
+  .quiz-feedback { display:none; margin-top:10px; padding:11px 14px; border-radius:10px; font-size:0.86rem; line-height:1.5; }
+  .quiz-feedback.correct { background:rgba(34,197,94,0.14); border:1px solid rgba(34,197,94,0.38); color:#86efac; }
+  .quiz-feedback.wrong   { background:rgba(239,68,68,0.1);  border:1px solid rgba(239,68,68,0.32); color:#fca5a5; }
+  .quiz-score-wrap { text-align:center; padding:24px 0 6px; display:none; }
+  .quiz-score-num   { font-size:3.2rem; font-weight:800; color:#fbbf24; }
+  .quiz-score-label { font-size:1rem; color:rgba(255,255,255,0.7); margin-bottom:18px; }
+  .quiz-retry { padding:11px 28px; background:linear-gradient(135deg,#fbbf24,#f59e0b); border:none; border-radius:12px; font-family:'Nunito',sans-serif; font-size:0.98rem; font-weight:700; color:#1a1a2e; cursor:pointer; transition:all 0.2s; }
+  .quiz-retry:hover { transform:translateY(-2px); }
+
+  @media(max-width:520px){
+    .country-grid,.wants-grid,.proxy-grid,.hormuz-stats{ grid-template-columns:1fr; }
+    .nuke-visual{ flex-direction:column; }
+    .nuke-step{ border-right:none; border-bottom:1px solid var(--border); }
+    .nuke-step:last-child{ border-bottom:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🌍 World Affairs · 2023–2026</div>
+  <h1>Israel, the US &amp; Iran</h1>
+  <p>A detailed, friendly guide to one of the world's biggest news stories — explained just for you, Avyukth!</p>
+  <div class="hero-flags">
+    <span class="flag-chip">🇮🇱 Israel</span>
+    <span class="flag-chip">🇺🇸 United States</span>
+    <span class="flag-chip">🇮🇷 Iran</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ANALOGY -->
+  <div class="analogy-box" style="margin-top:28px;">
+    <div class="analogy-icon">💡</div>
+    <div><p><strong>Think of it like this:</strong> Imagine three neighbours on the same street who don't get along. One neighbour (Iran) keeps saying mean things and secretly gives money and weapons to troublemakers nearby who bother another neighbour (Israel). The third neighbour (the US) is Israel's best friend and keeps telling Iran to stop. Things kept getting louder and louder — until one day fighting actually broke out. That's what this story is about.</p></div>
+  </div>
+
+  <!-- WHO ARE THEY -->
+  <div class="section-label">👤 The three countries</div>
+  <h2>Who are they?</h2>
+  <div class="country-grid">
+    <div class="country-card israel">
+      <div class="country-flag">🇮🇱</div>
+      <div class="country-name">Israel</div>
+      <div class="country-fact"><span class="fact-icon">📍</span><span class="fact-text">A small country in the Middle East — smaller than Karnataka!</span></div>
+      <div class="country-fact"><span class="fact-icon">👥</span><span class="fact-text">Population: ~9 million — less than Mumbai city</span></div>
+      <div class="country-fact"><span class="fact-icon">🏛️</span><span class="fact-text">A democracy, founded in 1948 as a homeland for Jewish people</span></div>
+      <div class="country-fact"><span class="fact-icon">⚔️</span><span class="fact-text">Has fought many wars with neighbours since it was created</span></div>
+    </div>
+    <div class="country-card usa">
+      <div class="country-flag">🇺🇸</div>
+      <div class="country-name">United States</div>
+      <div class="country-fact"><span class="fact-icon">📍</span><span class="fact-text">The world's most powerful country, far away in North America</span></div>
+      <div class="country-fact"><span class="fact-icon">👥</span><span class="fact-text">Population: ~335 million people</span></div>
+      <div class="country-fact"><span class="fact-icon">🤝</span><span class="fact-text">Israel's biggest ally and protector for over 75 years</span></div>
+      <div class="country-fact"><span class="fact-icon">💪</span><span class="fact-text">World's strongest military — gives Israel weapons and money</span></div>
+    </div>
+    <div class="country-card iran">
+      <div class="country-flag">🇮🇷</div>
+      <div class="country-name">Iran</div>
+      <div class="country-fact"><span class="fact-icon">📍</span><span class="fact-text">A large country also in the Middle East, about 1,700 km from Israel</span></div>
+      <div class="country-fact"><span class="fact-icon">👥</span><span class="fact-text">Population: ~88 million people</span></div>
+      <div class="country-fact"><span class="fact-icon">🕌</span><span class="fact-text">Ruled by Islamic religious law since a revolution in 1979</span></div>
+      <div class="country-fact"><span class="fact-icon">😠</span><span class="fact-text">Says Israel has no right to exist and calls it an enemy</span></div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-container">
+    <div class="map-title">📍 Where are these countries?</div>
+    <svg viewBox="0 0 600 320" width="100%" style="max-width:580px;">
+      <rect width="600" height="320" fill="#bfdbfe" rx="10"/>
+      <ellipse cx="175" cy="58" rx="115" ry="42" fill="#d1fae5"/>
+      <ellipse cx="205" cy="220" rx="88" ry="82" fill="#fef3c7"/>
+      <ellipse cx="395" cy="118" rx="158" ry="75" fill="#fef3c7"/>
+      <ellipse cx="365" cy="200" rx="58" ry="46" fill="#fde68a"/>
+      <ellipse cx="478" cy="180" rx="24" ry="32" fill="#fde68a" opacity="0.7"/>
+      <text x="478" y="186" text-anchor="middle" font-size="9" fill="#92400e" font-weight="700" font-family="sans-serif">India</text>
+      <circle cx="282" cy="148" r="13" fill="#3b82f6" stroke="white" stroke-width="2.5"/>
+      <text x="282" y="153" text-anchor="middle" font-size="9" font-weight="800" fill="white" font-family="sans-serif">IL</text>
+      <text x="282" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8" font-family="sans-serif">Israel</text>
+      <circle cx="405" cy="142" r="13" fill="#22c55e" stroke="white" stroke-width="2.5"/>
+      <text x="405" y="147" text-anchor="middle" font-size="9" font-weight="800" fill="white" font-family="sans-serif">IR</text>
+      <text x="405" y="164" text-anchor="middle" font-size="10" font-weight="700" fill="#15803d" font-family="sans-serif">Iran</text>
+      <ellipse cx="62" cy="105" rx="52" ry="32" fill="#fee2e2" opacity="0.75"/>
+      <circle cx="52" cy="120" r="13" fill="#ef4444" stroke="white" stroke-width="2.5"/>
+      <text x="52" y="125" text-anchor="middle" font-size="9" font-weight="800" fill="white" font-family="sans-serif">US</text>
+      <text x="52" y="142" text-anchor="middle" font-size="10" font-weight="700" fill="#b91c1c" font-family="sans-serif">USA</text>
+      <line x1="295" y1="148" x2="392" y2="143" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="344" y="136" text-anchor="middle" font-size="9" fill="#6b7280" font-weight="600" font-family="sans-serif">~1,700 km</text>
+      <path d="M 65 118 Q 165 72 268 145" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" fill="none"/>
+      <text x="165" y="78" text-anchor="middle" font-size="9" fill="#b91c1c" font-weight="600" font-family="sans-serif">Close allies</text>
+      <text x="222" y="175" font-size="9" fill="#60a5fa" font-style="italic" font-family="sans-serif">Mediterranean Sea</text>
+      <text x="310" y="260" font-size="9" fill="#60a5fa" font-style="italic" font-family="sans-serif">Arabian Sea</text>
+      <rect x="8" y="278" width="280" height="34" rx="7" fill="white" opacity="0.8"/>
+      <circle cx="26" cy="295" r="7" fill="#3b82f6"/><text x="38" y="299" font-size="9" fill="#374151" font-weight="600" font-family="sans-serif">Israel</text>
+      <circle cx="85" cy="295" r="7" fill="#ef4444"/><text x="97" y="299" font-size="9" fill="#374151" font-weight="600" font-family="sans-serif">USA (far away)</text>
+      <circle cx="180" cy="295" r="7" fill="#22c55e"/><text x="192" y="299" font-size="9" fill="#374151" font-weight="600" font-family="sans-serif">Iran</text>
+    </svg>
+    <p style="font-size:0.8rem;color:#0369a1;margin-top:8px;margin-bottom:0;">Israel is smaller than Karnataka. Iran is about 1,700 km away — roughly the distance from Delhi to Sri Lanka. The USA is thousands of km away but still deeply involved.</p>
+  </div>
+
+  <!-- HISTORY TIMELINE -->
+  <div class="section-label">📅 The History</div>
+  <h2>How did this all start? The full story.</h2>
+  <p>This is a long story that goes back many decades. Here are every important moment:</p>
+
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot blue"></div></div>
+      <div class="tl-content">
+        <div class="tl-year blue">1948</div>
+        <div class="tl-title">Israel is born 🌟</div>
+        <div class="tl-desc">After World War 2, where millions of Jewish people were killed by Nazi Germany, the United Nations agreed to create a new country called Israel in the Middle East as a homeland for Jewish people. Many Arab countries nearby were unhappy and attacked Israel immediately. Israel survived and has been defending itself ever since.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot green"></div></div>
+      <div class="tl-content">
+        <div class="tl-year green">1948–1978</div>
+        <div class="tl-title">Iran and Israel were actually friends!</div>
+        <div class="tl-desc">Hard to believe, but for 30 years Iran and Israel had friendly relations. Iran was ruled by a King called Shah Mohammad Reza Pahlavi, who got along well with Israel. Both countries traded, shared intelligence, and cooperated. Iran even supplied oil to Israel during this period.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot amber"></div></div>
+      <div class="tl-content">
+        <div class="tl-year amber">1979</div>
+        <div class="tl-title">Iran's Islamic Revolution — everything changes 🔄</div>
+        <div class="tl-desc">A religious leader called Ayatollah Ruhollah Khomeini led a revolution, removed the King, and took over Iran. The new government was deeply religious and hostile. They immediately declared Israel an enemy, calling it a "Zionist regime" that had no right to exist. They also called America "the Great Satan." That 30-year friendship was instantly destroyed and has never recovered.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot red"></div></div>
+      <div class="tl-content">
+        <div class="tl-year red">1982</div>
+        <div class="tl-title">Iran creates Hezbollah in Lebanon 🛡️</div>
+        <div class="tl-desc">Iran helped create a new armed group called Hezbollah in Lebanon — the country directly north of Israel. Iran trained them, paid them, and gave them weapons. Hezbollah's main purpose was to fight Israel. This was Iran's first big "proxy" — a group that fights on Iran's behalf without Iran fighting directly.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot purple"></div></div>
+      <div class="tl-content">
+        <div class="tl-year purple">1988</div>
+        <div class="tl-title">Hamas is founded in Gaza 🏘️</div>
+        <div class="tl-desc">Hamas was founded in Gaza (a small strip of land next to southern Israel) during a period of Palestinian protests. Hamas believed Israel should be destroyed and replaced with an Islamic state. Over time, Iran began funding and arming Hamas too. Hamas and Israel fought several wars in 2008, 2012, 2014, and 2021, but nothing as big as what came next.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot amber"></div></div>
+      <div class="tl-content">
+        <div class="tl-year amber">2002–2015</div>
+        <div class="tl-title">Iran's secret nuclear programme is discovered ☢️</div>
+        <div class="tl-desc">In 2002 it was revealed that Iran had been secretly building nuclear facilities for years. The world was alarmed. The US and many other countries imposed heavy "sanctions" (trade bans and banking restrictions) on Iran to try to make it stop. In 2015, after long negotiations, Iran signed the JCPOA deal — agreeing to limit its nuclear work in exchange for sanctions relief. But in 2018, US President Donald Trump pulled out of the deal, saying it was not strong enough.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot red"></div></div>
+      <div class="tl-content">
+        <div class="tl-year red">7 October 2023</div>
+        <div class="tl-title">Hamas launches the deadliest attack on Israel 💥</div>
+        <div class="tl-desc">At 6:30am on a Saturday morning — a Jewish holiday — Hamas launched a massive surprise attack on Israel. Over 6,000 fighters broke through the fence from Gaza in 119 places. They fired more than 4,300 rockets, attacked 21 towns, and killed approximately 1,200 people — the deadliest day for Jewish people since the Holocaust. They also took 251 people as hostages into Gaza tunnels. Israel declared war the next day.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot amber"></div></div>
+      <div class="tl-content">
+        <div class="tl-year amber">October 2023 – Present</div>
+        <div class="tl-title">Israel fights back in Gaza and across the region ⚡</div>
+        <div class="tl-desc">Israel launched a massive military response into Gaza to destroy Hamas. Meanwhile, Iran's other proxy groups also joined the fight — Hezbollah from Lebanon fired rockets into northern Israel, Houthi rebels in Yemen fired missiles at Israeli cities, and Iran-backed militias in Iraq and Syria attacked US bases. Israel found itself fighting on multiple fronts at once.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot red"></div></div>
+      <div class="tl-content">
+        <div class="tl-year red">1 April 2024</div>
+        <div class="tl-title">Israel bombs the Iranian embassy in Syria 🏛️💥</div>
+        <div class="tl-desc">Israel launched airstrikes on an Iranian diplomatic building (consulate) in Damascus, Syria. The attack killed seven senior officers of the IRGC (Iran's elite military force), including General Mohammad Reza Zahedi. Iran was furious. Attacking an embassy is considered extremely serious under international law, because embassies are supposed to be protected safe zones. Iran promised to retaliate directly.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot pink"></div></div>
+      <div class="tl-content">
+        <div class="tl-year pink">13–14 April 2024 — "True Promise I"</div>
+        <div class="tl-title">Iran attacks Israel directly — a historic first! 😲</div>
+        <div class="tl-desc">For the first time ever in history, Iran launched a direct military attack on Israel — firing more than 300 drones and missiles. The attack was called "Operation True Promise." It was a massive moment. However, Israel (with help from the USA, UK, France, Jordan and even Saudi Arabia) managed to shoot down over 99% of the projectiles in the air before they reached Israel. Only minor damage occurred. The world let out a huge sigh of relief.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot amber"></div></div>
+      <div class="tl-content">
+        <div class="tl-year amber">July–October 2024</div>
+        <div class="tl-title">Israel assassinates major Hamas and Hezbollah leaders 🎯</div>
+        <div class="tl-desc">Israel carried out a series of targeted killings of key enemy leaders. In July 2024, Hamas military commander Mohammed Deif was killed in a strike in Gaza. On 31 July, Hamas political chief Ismail Haniyeh — the man who planned the October 7 attack — was assassinated in Tehran, the capital of Iran itself. Then in September 2024, Hezbollah's leader Hassan Nasrallah, who had led the group for over 30 years, was killed in a massive Israeli strike in Beirut, Lebanon. Iran and its allies were severely shaken.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot red"></div></div>
+      <div class="tl-content">
+        <div class="tl-year red">1 October 2024 — "True Promise II"</div>
+        <div class="tl-title">Iran launches a second direct missile attack 🚀</div>
+        <div class="tl-desc">Iran retaliated for the assassination of Haniyeh and Nasrallah by firing approximately 200 ballistic missiles directly at Israel. Israel's missile defence systems, including the famous "Iron Dome" and "Arrow" interceptors, destroyed most of them. Some missiles hit open ground. Israel vowed to respond.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot amber"></div></div>
+      <div class="tl-content">
+        <div class="tl-year amber">October 2024</div>
+        <div class="tl-title">Israel strikes Iran's air defences 🛡️</div>
+        <div class="tl-desc">Israel retaliated by striking Iran's air defence systems — the radar and missile batteries that protect Iran's skies. Israel destroyed several of Iran's Russian-supplied S-300 missile defence systems near Isfahan and Tehran. This was a clever move: by destroying Iran's defences, Israel was preparing for potentially bigger strikes in the future.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot green"></div></div>
+      <div class="tl-content">
+        <div class="tl-year green">November 2024 – May 2025</div>
+        <div class="tl-title">Diplomacy — the USA tries to negotiate ☎️</div>
+        <div class="tl-desc">US President Donald Trump (who won the 2024 election) tried to negotiate a new nuclear deal with Iran. Talks were held in Oman and Rome. In May 2025, Iran's nuclear watchdog (the IAEA) reported that Iran now had enough enriched uranium to potentially build 9 nuclear weapons. The IAEA also declared Iran "non-compliant" — breaking its nuclear agreements — for the first time since 2005. The talks were running out of time.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot red"></div></div>
+      <div class="tl-content">
+        <div class="tl-year red">13 June 2025 — "Operation Rising Lion"</div>
+        <div class="tl-title">Israel launches the 12-Day War ⚔️</div>
+        <div class="tl-desc">At 3:15am, Israel launched a massive surprise attack on Iran — Operation Rising Lion. Over 200 Israeli fighter jets dropped more than 330 munitions on roughly 100 targets across Iran, including nuclear facilities at Natanz, air bases, military sites, and radar systems. Israel also assassinated several top Iranian military generals and nuclear scientists. It was the most severe attack on Iran since the Iran-Iraq War of the 1980s. Iran's S-300 air defences — already weakened in the October 2024 strikes — were mostly powerless to stop the jets.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot pink"></div></div>
+      <div class="tl-content">
+        <div class="tl-year pink">13–22 June 2025 — "True Promise III"</div>
+        <div class="tl-title">Iran fights back with 550+ missiles and 1,000+ drones 🚀</div>
+        <div class="tl-desc">Iran retaliated with Operation True Promise III — its largest ever counter-attack. Over 12 days, Iran fired more than 550 ballistic missiles and over 1,000 suicide drones at Israeli cities. Missiles struck neighbourhoods in Tel Aviv and Haifa, damaging apartment buildings. Israelis spent days in bomb shelters. Israel's multi-layered defence systems — Iron Dome (close range), David's Sling (medium), and Arrow (long range) — intercepted most missiles, but Israel was stretched hard. Over the 12 days, Israel carried out close to 360 strikes across 27 of Iran's provinces.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot blue"></div></div>
+      <div class="tl-content">
+        <div class="tl-year blue">21–22 June 2025</div>
+        <div class="tl-title">The USA enters the war 🇺🇸💣</div>
+        <div class="tl-desc">The USA entered the war directly. US bombers dropped special "bunker-buster" bombs on Iran's three most fortified nuclear sites: Natanz, Fordow, and Isfahan. Fordow was built deep underground inside a mountain and only the USA's most powerful bombs could reach it. Iran then fired missiles at Al-Udeid Air Base in Qatar, the largest US military base in the Middle East.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot green"></div></div>
+      <div class="tl-content">
+        <div class="tl-year green">24 June 2025</div>
+        <div class="tl-title">Ceasefire — the 12 days end 🕊️</div>
+        <div class="tl-desc">After intense mediation by the small country of Oman, a ceasefire was agreed. By the end of the 12 days: Iran reported at least 610 of its citizens killed; Israel reported 28 killed. Iran's nuclear programme was severely damaged. Israel had destroyed 70 of Iran's air defence batteries. But Iran's nuclear capability was not completely eliminated — the IAEA later said Iran could enrich uranium again within months.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot-wrap"><div class="tl-dot red"></div></div>
+      <div class="tl-content">
+        <div class="tl-year red">28 February 2026</div>
+        <div class="tl-title">The conflict reignites — and gets even bigger 💥</div>
+        <div class="tl-desc">After the ceasefire broke down and new nuclear negotiations failed, Israel and the US launched coordinated strikes on Iran again on 28 February 2026. This time, the opening strike assassinated Iran's Supreme Leader Ayatollah Ali Khamenei in Tehran. Iran retaliated by launching missiles across nine countries and — critically — began blocking the Strait of Hormuz, the world's most important oil shipping route. This is where things stand as of March 2026.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IRAN'S PROXY GROUPS -->
+  <div class="section-label">🕵️ Iran's Proxy Network</div>
+  <h2>Iran's "Axis of Resistance" — the groups it funds</h2>
+  <p>Iran doesn't always fight directly. Instead it gives money, weapons and training to armed groups in other countries to fight on its behalf. These are called "proxies." Here are the main ones:</p>
+
+  <div class="proxy-grid">
+    <div class="proxy-card">
+      <div class="proxy-flag">🇵🇸</div>
+      <div class="proxy-name">Hamas</div>
+      <div class="proxy-where">📍 Gaza Strip, next to Israel</div>
+      <div class="proxy-desc">Founded 1988. Iran funds and arms Hamas with rockets, drones, and money. Hamas launched the October 7 2023 attack, killing ~1,200 Israelis. Israel has been trying to destroy Hamas ever since.</div>
+    </div>
+    <div class="proxy-card">
+      <div class="proxy-flag">🇱🇧</div>
+      <div class="proxy-name">Hezbollah</div>
+      <div class="proxy-where">📍 Lebanon, north of Israel</div>
+      <div class="proxy-desc">Iran's most powerful proxy. Created in 1982, armed with over 100,000 rockets. Fired at Israel after October 7. Their longtime leader Hassan Nasrallah was killed by Israel in September 2024 — a huge blow.</div>
+    </div>
+    <div class="proxy-card">
+      <div class="proxy-flag">🇾🇪</div>
+      <div class="proxy-name">Houthis</div>
+      <div class="proxy-where">📍 Yemen (across the Red Sea)</div>
+      <div class="proxy-desc">Houthi rebels who control northern Yemen. After October 7, they began firing missiles at Israel and attacking international shipping in the Red Sea, disrupting global trade. The USA and UK launched airstrikes on them in response.</div>
+    </div>
+    <div class="proxy-card">
+      <div class="proxy-flag">🇮🇶</div>
+      <div class="proxy-name">Kataib Hezbollah &amp; Iraqi militias</div>
+      <div class="proxy-where">📍 Iraq and Syria</div>
+      <div class="proxy-desc">Iran-backed armed groups in Iraq and Syria. They launched many drone and rocket attacks on US military bases in the region, killing American soldiers. The US struck back multiple times.</div>
+    </div>
+  </div>
+
+  <div class="info-box amber">
+    <div class="info-box-icon">🧩</div>
+    <div class="info-box-body">
+      <div class="info-box-title">The "Axis of Resistance"</div>
+      <div class="info-box-text">Iran calls all these groups together the "Axis of Resistance." The idea is that they all work together to resist (fight against) Israel and American influence in the Middle East. By October 2024, Israel had severely weakened all of these groups — Hamas was partly destroyed, Hezbollah's leader was killed, and the Houthis were under US and UK bombardment.</div>
+    </div>
+  </div>
+
+  <!-- NUCLEAR SECTION -->
+  <div class="section-label">☢️ The Nuclear Question</div>
+  <h2>What is a nuclear bomb — and why is everyone scared?</h2>
+
+  <div class="analogy-box">
+    <div class="analogy-icon">🔬</div>
+    <div><p><strong>Super simple science:</strong> Inside every tiny atom is incredible energy. When scientists learned how to release this energy, they found it could either make electricity (useful and safe) or create a terrifyingly powerful bomb. One nuclear bomb dropped on Hiroshima, Japan in 1945 destroyed an entire city in seconds and killed over 70,000 people. That is why everyone is so scared of nuclear weapons.</p></div>
+  </div>
+
+  <div class="nuke-visual">
+    <div class="nuke-step s1">
+      <div class="nuke-icon">⚡</div>
+      <div class="nuke-label">Enriched to</div>
+      <div class="nuke-val">~5%</div>
+      <div class="nuke-desc">Safe — used in power stations to make electricity</div>
+    </div>
+    <div class="nuke-step s2">
+      <div class="nuke-icon">⚠️</div>
+      <div class="nuke-label">Enriched to</div>
+      <div class="nuke-val">~60%</div>
+      <div class="nuke-desc">Very worrying — Iran had reached this level by June 2025</div>
+    </div>
+    <div class="nuke-step s3">
+      <div class="nuke-icon">💣</div>
+      <div class="nuke-label">Enriched to</div>
+      <div class="nuke-val">90%+</div>
+      <div class="nuke-desc">Weapons-grade — enough to build a nuclear bomb</div>
+    </div>
+  </div>
+
+  <div class="info-box green">
+    <div class="info-box-icon">✅</div>
+    <div class="info-box-body">
+      <div class="info-box-title">Iran said…</div>
+      <div class="info-box-text">Its nuclear programme was only for making electricity and medical research. It never wanted to build a bomb.</div>
+    </div>
+  </div>
+  <div class="info-box red">
+    <div class="info-box-icon">❌</div>
+    <div class="info-box-body">
+      <div class="info-box-title">Israel and the USA said…</div>
+      <div class="info-box-text">They didn't believe Iran. By June 2025, Iran had enriched enough uranium for potentially 9 nuclear weapons, enriched to 60% purity — far beyond what any electricity programme needs. They felt they had to act before Iran crossed the final threshold.</div>
+    </div>
+  </div>
+
+  <!-- STRAIT OF HORMUZ -->
+  <div class="section-label">🛢️ Trade &amp; The Strait of Hormuz</div>
+  <h2>The world's most important oil bottleneck</h2>
+
+  <div class="analogy-box">
+    <div class="analogy-icon">🚰</div>
+    <div><p><strong>Think of it like a tap:</strong> Imagine one single tap that supplies water to 20 out of every 100 houses on Earth. If someone turns that tap off, 20 families have no water. The Strait of Hormuz is that tap — but for oil. It is a narrow strip of sea between Iran and Oman, only about 40 km wide at its narrowest point. Almost all the oil from the world's biggest oil-producing countries passes through it.</p></div>
+  </div>
+
+  <!-- Hormuz SVG map -->
+  <div class="map-container">
+    <div class="map-title">🗺️ The Strait of Hormuz — why it matters</div>
+    <svg viewBox="0 0 580 260" width="100%" style="max-width:560px;">
+      <rect width="580" height="260" fill="#bfdbfe" rx="10"/>
+      <!-- Persian Gulf -->
+      <ellipse cx="240" cy="120" rx="170" ry="65" fill="#7dd3fc" opacity="0.6"/>
+      <text x="220" y="115" text-anchor="middle" font-size="11" fill="#0369a1" font-weight="700" font-family="sans-serif">Persian Gulf</text>
+      <!-- Iran landmass top -->
+      <rect x="80" y="20" width="400" height="70" rx="8" fill="#fde68a"/>
+      <text x="280" y="58" text-anchor="middle" font-size="13" fill="#92400e" font-weight="800" font-family="sans-serif">🇮🇷  IRAN</text>
+      <!-- Arabian Peninsula bottom -->
+      <ellipse cx="220" cy="215" rx="200" ry="38" fill="#fef3c7"/>
+      <text x="100" y="220" font-size="10" fill="#92400e" font-weight="600" font-family="sans-serif">Saudi Arabia / UAE / Oman</text>
+      <!-- Strait narrow point -->
+      <rect x="390" y="88" width="50" height="50" rx="4" fill="#f59e0b" opacity="0.35"/>
+      <text x="415" y="108" text-anchor="middle" font-size="9" fill="#b45309" font-weight="800" font-family="sans-serif">STRAIT OF</text>
+      <text x="415" y="120" text-anchor="middle" font-size="9" fill="#b45309" font-weight="800" font-family="sans-serif">HORMUZ</text>
+      <text x="415" y="132" text-anchor="middle" font-size="8" fill="#b45309" font-family="sans-serif">~40km wide</text>
+      <!-- Arrow showing oil flow -->
+      <path d="M 350 125 L 460 125 L 520 125" stroke="#dc2626" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+      <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#dc2626"/></marker></defs>
+      <text x="490" y="115" font-size="9" fill="#dc2626" font-weight="700" font-family="sans-serif">To world</text>
+      <!-- Country dots -->
+      <circle cx="200" cy="145" r="6" fill="#3b82f6"/>
+      <text x="212" y="149" font-size="9" fill="#1d4ed8" font-weight="600" font-family="sans-serif">Kuwait</text>
+      <circle cx="250" cy="158" r="6" fill="#ef4444"/>
+      <text x="262" y="162" font-size="9" fill="#b91c1c" font-weight="600" font-family="sans-serif">Saudi Arabia</text>
+      <circle cx="310" cy="148" r="6" fill="#8b5cf6"/>
+      <text x="322" y="152" font-size="9" fill="#6d28d9" font-weight="600" font-family="sans-serif">UAE / Qatar</text>
+      <!-- Oil barrel icons as text -->
+      <text x="160" y="132" font-size="14" font-family="sans-serif">🛢️</text>
+      <text x="190" y="132" font-size="14" font-family="sans-serif">🛢️</text>
+      <text x="220" y="132" font-size="14" font-family="sans-serif">🛢️</text>
+      <text x="250" y="132" font-size="14" font-family="sans-serif">🛢️</text>
+      <text x="280" y="132" font-size="14" font-family="sans-serif">🛢️</text>
+    </svg>
+    <p style="font-size:0.8rem;color:#0369a1;margin-top:8px;margin-bottom:0;">Oil from Saudi Arabia, Kuwait, UAE, Qatar, Iraq and Iran all flows through this one narrow gap before reaching the rest of the world.</p>
+  </div>
+
+  <div class="hormuz-stats">
+    <div class="hstat"><div class="hstat-val">20M</div><div class="hstat-lbl">barrels per day flow through</div></div>
+    <div class="hstat"><div class="hstat-val">~20%</div><div class="hstat-lbl">of world's total oil consumption</div></div>
+    <div class="hstat"><div class="hstat-val">25%</div><div class="hstat-lbl">of all seaborne oil trade</div></div>
+    <div class="hstat"><div class="hstat-val">20%</div><div class="hstat-lbl">of world's natural gas (LNG)</div></div>
+    <div class="hstat"><div class="hstat-val">84%</div><div class="hstat-lbl">goes to Asian countries</div></div>
+    <div class="hstat"><div class="hstat-val">138</div><div class="hstat-lbl">ships pass through every single day</div></div>
+  </div>
+
+  <h3>What happens if the Strait is blocked?</h3>
+  <table class="impact-table">
+    <thead>
+      <tr><th>If blocked for…</th><th>What happens</th><th>Severity</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>A few days</td><td>Oil prices spike, some countries panic-buy. Markets get nervous.</td><td><span class="badge amber">Worrying</span></td></tr>
+      <tr><td>A few weeks</td><td>Oil prices could hit $100–$150 per barrel. Petrol prices in India go up sharply. Factories and airlines pay more. Some countries face shortages.</td><td><span class="badge red">Serious</span></td></tr>
+      <tr><td>Months</td><td>Global economic recession (downturn). Massive shortages in Japan, South Korea, China, India. Food prices rise because fertilisers and transport become more expensive.</td><td><span class="badge red">Crisis</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box blue">
+    <div class="info-box-icon">🇮🇳</div>
+    <div class="info-box-body">
+      <div class="info-box-title">Why India is especially affected</div>
+      <div class="info-box-text">India and China together receive 44% of all oil exported through the Strait of Hormuz. India buys huge amounts of oil from Saudi Arabia, UAE, Iraq and Iran — all of which ships through this strait. If it closes, India faces an energy crisis. In 2026 when Iran began blocking the strait, India sent Navy destroyers to escort Indian-owned tankers through the Gulf of Oman.</div>
+    </div>
+  </div>
+
+  <div class="info-box red">
+    <div class="info-box-icon">🚨</div>
+    <div class="info-box-body">
+      <div class="info-box-title">What's happening right now (March 2026)</div>
+      <div class="info-box-text">After the February 2026 strikes by Israel and the US, Iran's Revolutionary Guard began blocking the Strait of Hormuz and attacking ships. Oil prices surged above $100 per barrel. Major shipping companies like Maersk suspended transits. The US military launched operations to reopen the strait. This is the most serious disruption to global oil since the 1970s oil crisis.</div>
+    </div>
+  </div>
+
+  <!-- WHAT EACH WANTS -->
+  <div class="section-label">🎯 Goals</div>
+  <h2>What does each country want?</h2>
+  <div class="wants-grid">
+    <div class="wants-card israel">
+      <div class="wants-title">🇮🇱 Israel wants…</div>
+      <div class="want-item israel"><div class="want-bullet"></div><div class="want-text">Iran to never build a nuclear bomb — Israel fears it could be destroyed</div></div>
+      <div class="want-item israel"><div class="want-bullet"></div><div class="want-text">Iran to stop funding Hamas, Hezbollah, and other proxy groups</div></div>
+      <div class="want-item israel"><div class="want-bullet"></div><div class="want-text">The hostages from October 7 to come home</div></div>
+      <div class="want-item israel"><div class="want-bullet"></div><div class="want-text">Safety and security for its 9 million people</div></div>
+    </div>
+    <div class="wants-card usa">
+      <div class="wants-title">🇺🇸 USA wants…</div>
+      <div class="want-item usa"><div class="want-bullet"></div><div class="want-text">No nuclear weapons in the Middle East — could trigger a world war</div></div>
+      <div class="want-item usa"><div class="want-bullet"></div><div class="want-text">To protect its ally Israel and its military bases in the region</div></div>
+      <div class="want-item usa"><div class="want-bullet"></div><div class="want-text">The Strait of Hormuz to stay open for global trade</div></div>
+      <div class="want-item usa"><div class="want-bullet"></div><div class="want-text">Its soldiers in the region to be safe from Iranian proxy attacks</div></div>
+    </div>
+    <div class="wants-card iran">
+      <div class="wants-title">🇮🇷 Iran wants…</div>
+      <div class="want-item iran"><div class="want-bullet"></div><div class="want-text">To be the most powerful country in the Middle East</div></div>
+      <div class="want-item iran"><div class="want-bullet"></div><div class="want-text">Sanctions (trade bans) lifted so its economy can recover</div></div>
+      <div class="want-item iran"><div class="want-bullet"></div><div class="want-text">The USA and Israel to stay out of its affairs</div></div>
+      <div class="want-item iran"><div class="want-bullet"></div><div class="want-text">Nuclear technology — though it says only for peaceful purposes</div></div>
+    </div>
+  </div>
+
+  <!-- KEY VOCAB -->
+  <div class="section-label">📖 Key words</div>
+  <h2>Words you'll hear on the news</h2>
+  <div class="info-box blue">
+    <div class="info-box-icon">🏛️</div>
+    <div class="info-box-body"><div class="info-box-title">Sanctions</div><div class="info-box-text">Like a collective punishment from other countries — the USA told banks and businesses around the world "don't trade with Iran, don't let them use your financial system." This made Iran's economy very weak, its currency worthless, and everyday prices in Iran very high for ordinary people.</div></div>
+  </div>
+  <div class="info-box amber">
+    <div class="info-box-icon">🤝</div>
+    <div class="info-box-body"><div class="info-box-title">Proxy groups</div><div class="info-box-text">Iran doesn't always fight directly — it gives money, weapons and training to armed groups like Hamas and Hezbollah to fight on its behalf. They're called "proxies" — like hiring someone else to fight your battles. This way Iran can cause trouble without technically starting a war itself.</div></div>
+  </div>
+  <div class="info-box purple">
+    <div class="info-box-icon">☢️</div>
+    <div class="info-box-body"><div class="info-box-title">Nuclear enrichment</div><div class="info-box-text">The process of making uranium (a special metal found underground) more and more powerful. At 5% it powers electricity stations safely. At 90%+ it can power a nuclear bomb. Iran had enriched uranium to 60% by 2025 — far beyond what any electricity programme needs, which is why Israel and the US were so alarmed.</div></div>
+  </div>
+  <div class="info-box green">
+    <div class="info-box-icon">🛡️</div>
+    <div class="info-box-body"><div class="info-box-title">Iron Dome / David's Sling / Arrow</div><div class="info-box-text">Israel has three layers of missile defence. Iron Dome shoots down short-range rockets (used against Hamas rockets). David's Sling handles medium-range missiles. Arrow 2 and Arrow 3 intercept long-range ballistic missiles from countries like Iran. Together they form a multi-layer "onion" defence that made it possible to survive Iran's massive missile barrages in 2024 and 2025.</div></div>
+  </div>
+  <div class="info-box red">
+    <div class="info-box-icon">🪖</div>
+    <div class="info-box-body"><div class="info-box-title">IRGC (Islamic Revolutionary Guard Corps)</div><div class="info-box-text">Iran's elite military force — like a special army that is also responsible for spreading Iran's revolutionary ideology abroad. The IRGC runs Iran's missile programme, nuclear programme, and manages all the proxy groups like Hezbollah and Hamas. It is one of the most powerful institutions in Iran.</div></div>
+  </div>
+
+  <!-- WHY INDIA CARES -->
+  <div class="section-label">🇮🇳 India's connection</div>
+  <h2>Why does this matter to India?</h2>
+  <div class="card">
+    <div class="info-box amber" style="margin-bottom:10px;">
+      <div class="info-box-icon">🛢️</div>
+      <div class="info-box-body"><div class="info-box-title">Oil prices go up</div><div class="info-box-text">India imports about 85% of its oil. Much of it comes from the Middle East through the Strait of Hormuz. When there's conflict, oil prices rise — meaning petrol in India gets more expensive, trucks and factories cost more to run, and everything from food to medicines becomes pricier.</div></div>
+    </div>
+    <div class="info-box blue" style="margin-bottom:10px;">
+      <div class="info-box-icon">👨‍👩‍👧</div>
+      <div class="info-box-body"><div class="info-box-title">80,000+ Indians live in Israel</div><div class="info-box-text">A large number of Indian workers, students and families live in Israel. When war breaks out, India's government has to work urgently to keep them safe, help them evacuate, and arrange emergency flights home.</div></div>
+    </div>
+    <div class="info-box green" style="margin-bottom:10px;">
+      <div class="info-box-icon">🚢</div>
+      <div class="info-box-body"><div class="info-box-title">Ships and trade routes</div><div class="info-box-text">Ships carrying Indian goods to Europe pass through the Red Sea and near Yemen, where the Houthis have been attacking vessels. Many ships now have to go all the way around Africa instead — adding weeks to the journey and making Indian exports and imports more expensive.</div></div>
+    </div>
+    <div class="info-box purple" style="margin-bottom:0;">
+      <div class="info-box-icon">⚖️</div>
+      <div class="info-box-body"><div class="info-box-title">India's diplomatic balancing act</div><div class="info-box-text">India has good relations with both Israel (a technology and defence partner) and Iran (India buys oil from Iran and they share a trade route to Central Asia called the International North-South Transport Corridor). India tries hard not to take sides — it needs both relationships.</div></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <h2>🧠 Test What You've Learnt!</h2>
+      <p>10 questions covering everything — history, groups, Hormuz, and current events. Good luck, Avyukth!</p>
+    </div>
+    <div class="quiz-progress-wrap"><div class="quiz-progress-bar" id="quizProgressBar" style="width:0%"></div></div>
+    <div id="quizContainer"></div>
+    <div class="quiz-score-wrap" id="quizScoreWrap">
+      <div class="quiz-score-num" id="quizScoreNum"></div>
+      <div class="quiz-score-label" id="quizScoreLabel"></div>
+      <button class="quiz-retry" onclick="initQuiz()">🔄 Try Again!</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const quizData = [
+  { q:"Iran and Israel were once friendly. What year did Iran's revolution destroy that friendship?", options:["1948","1967","1979","1990"], answer:2, feedback:"Correct! Iran's Islamic Revolution in 1979 ended 30 years of friendship when the new religious government declared Israel an enemy." },
+  { q:"What was special about Iran's attack on Israel in April 2024 (True Promise I)?", options:["It was the first time Hamas attacked Israel","Iran destroyed the Iron Dome","It was the first time Iran had ever attacked Israel directly","Iran invaded Israeli territory"], answer:2, feedback:"Exactly right! For the very first time in history, Iran attacked Israel directly with 300+ drones and missiles — not through proxy groups. Over 99% were shot down." },
+  { q:"Which of these is NOT one of Iran's proxy groups?", options:["Hamas (Gaza)","Hezbollah (Lebanon)","Houthis (Yemen)","Mossad (Israel)"], answer:3, feedback:"Correct! Mossad is Israel's intelligence agency. Hamas, Hezbollah and the Houthis are all Iran-funded groups that fight on Iran's behalf." },
+  { q:"What happened on 1 April 2024 that made Iran decide to attack Israel directly?", options:["Hamas launched rockets at Israel","Israel bombed the Iranian consulate in Syria, killing senior IRGC officers","The USA imposed new sanctions on Iran","Israel invaded Lebanon"], answer:1, feedback:"That's right! Israel struck Iran's consulate (diplomatic building) in Damascus, Syria, killing 7 IRGC officers including a senior general. Iran saw this as an act of war and launched True Promise I two weeks later." },
+  { q:"What were the dates of the 12-Day War?", options:["13–24 June 2025","7–19 October 2023","1–12 April 2024","28 February – 12 March 2026"], answer:0, feedback:"Well done! The 12-Day War ran from 13 to 24 June 2025, beginning with Israel's Operation Rising Lion and ending with a US-brokered ceasefire." },
+  { q:"About what fraction of the world's oil passes through the Strait of Hormuz?", options:["1 in 20 barrels (5%)","1 in 5 barrels (20%)","1 in 2 barrels (50%)","All of it (100%)"], answer:1, feedback:"Correct! About 20 million barrels per day pass through — roughly 20% of all the world's oil consumption. That's 1 in every 5 barrels the world uses." },
+  { q:"Why is India especially worried about the Strait of Hormuz?", options:["India and Israel share a land border near the strait","India and China together receive 44% of all oil exported through the strait","India has a naval base inside the strait","India owns oil fields in the Persian Gulf"], answer:1, feedback:"Exactly! India and China together receive 44% of all Hormuz oil exports. India imports 85% of its oil, much of it from the Middle East. If the strait closes, India faces a serious energy crisis." },
+  { q:"What is the IRGC?", options:["Israel's missile defence system","Iran's elite military force that runs its nuclear programme and proxy groups","The United Nations nuclear watchdog","America's intelligence agency"], answer:1, feedback:"Right! The IRGC (Islamic Revolutionary Guard Corps) is Iran's elite military and the organisation that manages Iran's nuclear programme, ballistic missiles, and all its proxy groups like Hezbollah and Hamas." },
+  { q:"What happened to Hezbollah's long-time leader Hassan Nasrallah?", options:["He signed a peace deal with Israel","He was elected President of Lebanon","He was killed in an Israeli airstrike in Beirut in September 2024","He fled to Iran after the 12-Day War"], answer:2, feedback:"Correct! Hassan Nasrallah, who had led Hezbollah for over 30 years, was killed in a massive Israeli airstrike on Beirut, Lebanon in September 2024. This was a huge blow to Iran's proxy network." },
+  { q:"After the February 2026 strikes by Israel and the US, what did Iran do to the world's oil supply?", options:["Iran increased oil production to drive prices down","Iran bombed Saudi oil fields","Iran began blocking the Strait of Hormuz, stopping oil tankers","Iran gifted its oil to China and India"], answer:2, feedback:"That's right! Iran's Revolutionary Guard began blocking the Strait of Hormuz, stopping or attacking oil tankers. This caused oil prices to surge past $100 per barrel and created a global energy crisis that is still ongoing as of March 2026." }
+];
+
+let currentQ=0, score=0, answered=false;
+
+function initQuiz(){
+  currentQ=0; score=0; answered=false;
+  document.getElementById('quizScoreWrap').style.display='none';
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const container=document.getElementById('quizContainer');
+  if(currentQ>=quizData.length){ showScore(); return; }
+  document.getElementById('quizProgressBar').style.width=`${(currentQ/quizData.length)*100}%`;
+  const q=quizData[currentQ];
+  const letters=['A','B','C','D'];
+  container.innerHTML=`
+    <div class="quiz-q">
+      <div class="quiz-q-text">${currentQ+1} / ${quizData.length} — ${q.q}</div>
+      <div class="quiz-options">
+        ${q.options.map((opt,i)=>`<button class="quiz-opt" id="opt${i}" onclick="selectAnswer(${i})"><span class="opt-letter">${letters[i]}</span>${opt}</button>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+    </div>`;
+  answered=false;
+}
+
+function selectAnswer(idx){
+  if(answered) return;
+  answered=true;
+  const q=quizData[currentQ];
+  document.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+  const fb=document.getElementById('quizFeedback');
+  if(idx===q.answer){
+    document.getElementById('opt'+idx).classList.add('correct');
+    score++;
+    fb.className='quiz-feedback correct';
+    fb.innerHTML='✅ '+q.feedback;
+  } else {
+    document.getElementById('opt'+idx).classList.add('wrong');
+    document.getElementById('opt'+q.answer).classList.add('correct');
+    fb.className='quiz-feedback wrong';
+    fb.innerHTML='❌ Not quite. Correct answer: <strong>'+q.options[q.answer]+'</strong>. '+q.feedback;
+  }
+  fb.style.display='block';
+  setTimeout(()=>{ currentQ++; renderQuestion(); }, 3000);
+}
+
+function showScore(){
+  document.getElementById('quizContainer').innerHTML='';
+  document.getElementById('quizProgressBar').style.width='100%';
+  const pct=score/quizData.length;
+  let label;
+  if(pct===1) label="Perfect 10/10! You're a world affairs genius, Avyukth! Outstanding! 🌟";
+  else if(pct>=0.8) label="Excellent! You clearly read and understood everything. Very impressive! 📚";
+  else if(pct>=0.6) label="Good effort! Go back and re-read the sections you found tricky, then try again!";
+  else label="Keep going — this is a complex topic. Read through once more and you'll do much better! 💪";
+  document.getElementById('quizScoreNum').textContent=score+' / '+quizData.length;
+  document.getElementById('quizScoreLabel').textContent=label;
+  document.getElementById('quizScoreWrap').style.display='block';
+}
+
+initQuiz();
+</script>
+</body>
+</html>

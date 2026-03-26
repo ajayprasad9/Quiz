@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avyukth's Harry Potter Quiz!</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #0d0d1a;
+    background-image: radial-gradient(ellipse at 20% 50%, #1a0a2e 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #0a1a2e 0%, transparent 60%);
+    font-family: 'Crimson Text', serif;
+    color: #f0e6d3;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px;
+  }
+  body::before {
+    content: ''; position: fixed; top:0;left:0;right:0;bottom:0;
+    background-image: radial-gradient(1px 1px at 10% 15%,white,transparent),radial-gradient(1px 1px at 30% 5%,white,transparent),radial-gradient(1px 1px at 55% 25%,white,transparent),radial-gradient(1px 1px at 75% 10%,white,transparent),radial-gradient(1px 1px at 90% 30%,white,transparent),radial-gradient(1px 1px at 20% 40%,white,transparent),radial-gradient(1px 1px at 45% 60%,white,transparent),radial-gradient(1px 1px at 65% 75%,white,transparent),radial-gradient(1px 1px at 85% 55%,white,transparent),radial-gradient(1px 1px at 5% 80%,white,transparent),radial-gradient(1px 1px at 40% 85%,white,transparent),radial-gradient(1px 1px at 70% 90%,white,transparent);
+    opacity:0.5; pointer-events:none; z-index:0;
+  }
+  .container { position:relative; z-index:1; width:100%; max-width:680px; }
+  header { text-align:center; margin-bottom:24px; }
+  .lightning { font-size:44px; margin-bottom:6px; }
+  h1 { font-size:2.1rem; color:#f5c842; text-shadow:0 0 20px #f5c84288; letter-spacing:1px; margin-bottom:4px; font-family:'Cinzel',serif; }
+  .subtitle { font-size:1.05rem; color:#b8a9c9; font-style:italic; }
+
+  .top-nav { display:flex; gap:8px; justify-content:center; margin-bottom:20px; }
+  .nav-tab { padding:8px 18px; border-radius:20px; border:1.5px solid rgba(255,255,255,0.2); background:transparent; color:#b8a9c9; cursor:pointer; font-family:'Crimson Text',serif; font-size:0.95rem; transition:all 0.2s; }
+  .nav-tab:hover,.nav-tab.active { border-color:#f5c842; color:#f5c842; background:rgba(245,200,66,0.1); }
+  .nav-tab.report-tab { border-color:#9b59b6; color:#c39bd3; }
+  .nav-tab.report-tab:hover,.nav-tab.report-tab.active { border-color:#9b59b6; color:#d2b4de; background:rgba(155,89,182,0.15); }
+
+  .screen { display:none; }
+  .screen.active { display:block; }
+
+  .house-selector { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; margin-bottom:20px; text-align:center; }
+  .house-selector h2 { font-size:1.2rem; color:#f5c842; margin-bottom:14px; }
+  .houses { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .house-btn { padding:9px 18px; border-radius:30px; border:2px solid; background:transparent; cursor:pointer; font-family:'Crimson Text',serif; font-size:0.95rem; font-weight:600; transition:all 0.2s; }
+  .house-btn:hover,.house-btn.active { transform:scale(1.08); }
+  .house-btn.gryffindor { border-color:#c0392b; color:#e74c3c; }
+  .house-btn.gryffindor:hover,.house-btn.gryffindor.active { background:#c0392b22; box-shadow:0 0 16px #c0392b66; }
+  .house-btn.hufflepuff { border-color:#f39c12; color:#f5c842; }
+  .house-btn.hufflepuff:hover,.house-btn.hufflepuff.active { background:#f39c1222; box-shadow:0 0 16px #f5c84266; }
+  .house-btn.ravenclaw { border-color:#2980b9; color:#5dade2; }
+  .house-btn.ravenclaw:hover,.house-btn.ravenclaw.active { background:#2980b922; box-shadow:0 0 16px #2980b966; }
+  .house-btn.slytherin { border-color:#27ae60; color:#2ecc71; }
+  .house-btn.slytherin:hover,.house-btn.slytherin.active { background:#27ae6022; box-shadow:0 0 16px #27ae6066; }
+
+  .category-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; justify-content:center; }
+  .cat-tab { padding:7px 14px; border-radius:20px; border:1.5px solid rgba(255,255,255,0.2); background:transparent; color:#b8a9c9; cursor:pointer; font-family:'Crimson Text',serif; font-size:0.9rem; transition:all 0.2s; }
+  .cat-tab:hover,.cat-tab.active { border-color:#f5c842; color:#f5c842; background:rgba(245,200,66,0.1); }
+
+  .score-bar { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px 18px; margin-bottom:16px; }
+  .score-item { text-align:center; }
+  .score-label { font-size:0.75rem; color:#b8a9c9; text-transform:uppercase; letter-spacing:1px; }
+  .score-value { font-size:1.5rem; color:#f5c842; font-weight:600; }
+
+  .progress-wrap { background:rgba(255,255,255,0.1); border-radius:10px; height:7px; margin-bottom:20px; overflow:hidden; }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#f5c842,#e67e22); border-radius:10px; transition:width 0.4s ease; }
+
+  .question-card { background:rgba(255,255,255,0.06); border:1px solid rgba(245,200,66,0.2); border-radius:20px; padding:26px; margin-bottom:18px; box-shadow:0 8px 32px rgba(0,0,0,0.3); }
+  .question-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .q-number { font-size:0.82rem; color:#b8a9c9; }
+  .difficulty { font-size:0.78rem; padding:3px 10px; border-radius:20px; font-weight:600; }
+  .diff-easy { background:#27ae6033; color:#2ecc71; border:1px solid #27ae60; }
+  .diff-medium { background:#f39c1233; color:#f5c842; border:1px solid #f39c12; }
+  .diff-hard { background:#c0392b33; color:#e74c3c; border:1px solid #c0392b; }
+  .question-text { font-size:1.2rem; line-height:1.6; color:#f0e6d3; margin-bottom:20px; }
+
+  .hint-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .hint-btn { background:transparent; border:1.5px solid #9b59b6; border-radius:20px; padding:5px 14px; color:#c39bd3; font-family:'Crimson Text',serif; font-size:0.9rem; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+  .hint-btn:hover { background:rgba(155,89,182,0.15); }
+  .hint-box { display:none; background:rgba(155,89,182,0.12); border:1px solid #9b59b655; border-radius:8px; padding:8px 12px; font-size:0.9rem; color:#d2b4de; font-style:italic; width:100%; margin-top:6px; }
+  .hint-box.visible { display:block; }
+
+  .options { display:flex; flex-direction:column; gap:10px; }
+  .option-btn { background:rgba(255,255,255,0.05); border:1.5px solid rgba(255,255,255,0.15); border-radius:12px; padding:13px 16px; text-align:left; cursor:pointer; font-family:'Crimson Text',serif; font-size:1rem; color:#f0e6d3; transition:all 0.2s; display:flex; align-items:center; gap:10px; }
+  .option-btn:hover:not(:disabled) { background:rgba(245,200,66,0.1); border-color:rgba(245,200,66,0.4); transform:translateX(4px); }
+  .option-btn.correct { background:rgba(39,174,96,0.2); border-color:#27ae60; color:#2ecc71; }
+  .option-btn.wrong { background:rgba(192,57,43,0.2); border-color:#c0392b; color:#e74c3c; }
+  .option-letter { width:26px;height:26px; border-radius:50%; border:1.5px solid currentColor; display:flex;align-items:center;justify-content:center; font-size:0.8rem; font-weight:600; flex-shrink:0; }
+
+  .feedback { margin-top:14px; padding:12px 16px; border-radius:12px; font-size:0.98rem; line-height:1.5; display:none; }
+  .feedback.correct-fb { background:rgba(39,174,96,0.15); border:1px solid #27ae6055; color:#a8e6c1; }
+  .feedback.wrong-fb { background:rgba(192,57,43,0.15); border:1px solid #c0392b55; color:#f1948a; }
+
+  .next-btn { display:none; width:100%; margin-top:16px; padding:14px; background:linear-gradient(135deg,#f5c842,#e67e22); border:none; border-radius:12px; font-family:'Crimson Text',serif; font-size:1.1rem; font-weight:600; color:#1a0a2e; cursor:pointer; transition:all 0.2s; }
+  .next-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px #f5c84266; }
+
+  .result-screen { text-align:center; background:rgba(255,255,255,0.06); border:1px solid rgba(245,200,66,0.2); border-radius:20px; padding:36px 24px; }
+  .result-emoji { font-size:58px; margin-bottom:14px; }
+  .result-title { font-size:1.9rem; color:#f5c842; margin-bottom:6px; font-family:'Cinzel',serif; }
+  .result-score { font-size:1.3rem; color:#b8a9c9; margin-bottom:16px; }
+  .result-message { font-size:1.05rem; color:#f0e6d3; font-style:italic; margin-bottom:24px; line-height:1.6; }
+  .house-points-box { background:rgba(245,200,66,0.1); border:1px solid rgba(245,200,66,0.3); border-radius:12px; padding:14px; margin-bottom:20px; font-size:1.1rem; color:#f5c842; }
+  .result-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .btn-gold { padding:12px 28px; background:linear-gradient(135deg,#f5c842,#e67e22); border:none; border-radius:12px; font-family:'Crimson Text',serif; font-size:1.05rem; font-weight:600; color:#1a0a2e; cursor:pointer; transition:all 0.2s; }
+  .btn-gold:hover { transform:translateY(-2px); box-shadow:0 6px 20px #f5c84266; }
+  .btn-outline { padding:12px 28px; background:transparent; border:2px solid #f5c842; border-radius:12px; font-family:'Crimson Text',serif; font-size:1.05rem; color:#f5c842; cursor:pointer; transition:all 0.2s; }
+  .btn-outline:hover { background:rgba(245,200,66,0.1); }
+
+  /* ── CERTIFICATE ── */
+  @media print {
+    body { background:#fff !important; padding:0; }
+    body::before { display:none; }
+    .no-print { display:none !important; }
+    #quizScreen .score-bar, #quizScreen .category-tabs, #quizScreen .house-selector, #quizScreen .progress-wrap, #quizScreen .question-card, #quizScreen .result-screen { display:none !important; }
+  }
+
+  .cert-wrap {
+    background: linear-gradient(135deg,#1a0a2e 0%,#0d1b3e 50%,#1a0a2e 100%);
+    border: 8px double #f5c842;
+    border-radius: 16px; padding: 40px 32px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cert-corner { position:absolute; font-size:1.4rem; color:#f5c84255; }
+  .cert-corner.tl { top:12px; left:16px; }
+  .cert-corner.tr { top:12px; right:16px; }
+  .cert-corner.bl { bottom:12px; left:16px; }
+  .cert-corner.br { bottom:12px; right:16px; }
+  .cert-seal { font-size:52px; margin-bottom:8px; }
+  .cert-hogwarts { font-family:'Cinzel',serif; font-size:0.85rem; color:#f5c84288; letter-spacing:4px; text-transform:uppercase; margin-bottom:6px; }
+  .cert-title { font-family:'Cinzel',serif; font-size:1.8rem; color:#f5c842; text-shadow:0 0 20px #f5c84266; margin-bottom:16px; }
+  .cert-divider { color:#f5c84255; letter-spacing:6px; margin:10px 0; }
+  .cert-body { font-size:1.05rem; color:#e0d0f0; line-height:2.1; margin-bottom:10px; }
+  .cert-name { font-family:'Cinzel',serif; font-size:1.9rem; color:#fff; border-bottom:2px solid #f5c842; display:inline-block; padding:0 20px 5px; margin:4px 0; }
+  .cert-score-big { font-size:2.8rem; font-weight:700; color:#f5c842; font-family:'Cinzel',serif; text-shadow:0 0 30px #f5c84266; }
+  .cert-meta { font-size:1rem; color:#d2b4de; margin-top:10px; }
+  .cert-date { font-size:0.85rem; color:#b8a9c988; margin-top:18px; font-style:italic; }
+
+  /* ── PARENT REPORT ── */
+  .parent-gate { text-align:center; padding:40px 20px; }
+  .parent-gate h2 { font-size:1.6rem; color:#9b59b6; margin-bottom:10px; font-family:'Cinzel',serif; }
+  .parent-gate p { color:#b8a9c9; margin-bottom:24px; }
+  .pin-input { background:rgba(155,89,182,0.1); border:2px solid #9b59b6; border-radius:12px; padding:12px 20px; font-size:1.4rem; color:#f0e6d3; font-family:'Crimson Text',serif; text-align:center; letter-spacing:8px; width:160px; outline:none; }
+  .pin-input:focus { border-color:#c39bd3; box-shadow:0 0 12px #9b59b655; }
+  .pin-btn { margin-top:16px; padding:12px 32px; background:linear-gradient(135deg,#9b59b6,#6c3483); border:none; border-radius:12px; font-family:'Crimson Text',serif; font-size:1.05rem; color:#fff; cursor:pointer; transition:all 0.2s; display:block; margin-left:auto; margin-right:auto; }
+  .pin-btn:hover { transform:translateY(-2px); box-shadow:0 6px 16px #9b59b655; }
+  .pin-error { color:#e74c3c; font-size:0.9rem; margin-top:10px; display:none; }
+
+  .report-wrap { display:none; }
+  .report-wrap.visible { display:block; }
+  .report-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; flex-wrap:wrap; gap:12px; }
+  .report-title { font-family:'Cinzel',serif; font-size:1.4rem; color:#c39bd3; }
+  .report-clear-btn { padding:7px 14px; background:transparent; border:1.5px solid #e74c3c; border-radius:20px; color:#e74c3c; font-family:'Crimson Text',serif; font-size:0.88rem; cursor:pointer; transition:all 0.2s; }
+  .report-clear-btn:hover { background:rgba(231,76,60,0.1); }
+
+  .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:22px; }
+  .stat-card { background:rgba(155,89,182,0.1); border:1px solid rgba(155,89,182,0.3); border-radius:14px; padding:16px; text-align:center; }
+  .stat-val { font-size:1.9rem; color:#c39bd3; font-weight:600; font-family:'Cinzel',serif; }
+  .stat-lbl { font-size:0.75rem; color:#b8a9c9; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+
+  .report-section { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:18px; margin-bottom:18px; }
+  .section-title { font-size:1.05rem; color:#f5c842; margin-bottom:14px; border-bottom:1px solid rgba(245,200,66,0.2); padding-bottom:7px; }
+
+  .cat-row { margin-bottom:13px; }
+  .cat-row-header { display:flex; justify-content:space-between; font-size:0.92rem; color:#f0e6d3; margin-bottom:5px; }
+  .cat-bar-bg { background:rgba(255,255,255,0.08); border-radius:8px; height:9px; overflow:hidden; }
+  .cat-bar-fill { height:100%; border-radius:8px; }
+
+  .attempt-row { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:13px 15px; margin-bottom:9px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  .attempt-date { font-size:0.8rem; color:#b8a9c9; }
+  .attempt-cat { font-size:0.85rem; color:#9b59b6; }
+  .attempt-score { font-size:1.25rem; font-weight:600; }
+  .attempt-house { font-size:0.82rem; color:#b8a9c9; }
+
+  .trend-note { font-size:0.92rem; color:#a8e6c1; background:rgba(39,174,96,0.1); border:1px solid rgba(39,174,96,0.25); border-radius:10px; padding:11px 15px; margin-bottom:18px; }
+  .weak-note { font-size:0.92rem; color:#f1948a; background:rgba(192,57,43,0.1); border:1px solid rgba(192,57,43,0.25); border-radius:10px; padding:11px 15px; margin-bottom:18px; }
+  .no-data { text-align:center; color:#b8a9c9; font-style:italic; padding:40px 0; line-height:2; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="lightning">⚡</div>
+    <h1>Avyukth's HP Quiz!</h1>
+    <p class="subtitle">Test your wizarding knowledge</p>
+  </header>
+
+  <div class="top-nav no-print">
+    <button class="nav-tab active" onclick="switchScreen('quizScreen',this)">🧙 Quiz</button>
+    <button class="nav-tab report-tab" onclick="switchScreen('parentScreen',this)">📊 Report</button>
+  </div>
+
+  <!-- ══════════ QUIZ SCREEN ══════════ -->
+  <div id="quizScreen" class="screen active">
+
+    <div class="house-selector">
+      <h2>🏰 Choose Your House!</h2>
+      <div class="houses">
+        <button class="house-btn gryffindor" onclick="selectHouse('Gryffindor','🦁',this)">🦁 Gryffindor</button>
+        <button class="house-btn hufflepuff" onclick="selectHouse('Hufflepuff','🦡',this)">🦡 Hufflepuff</button>
+        <button class="house-btn ravenclaw" onclick="selectHouse('Ravenclaw','🦅',this)">🦅 Ravenclaw</button>
+        <button class="house-btn slytherin" onclick="selectHouse('Slytherin','🐍',this)">🐍 Slytherin</button>
+      </div>
+    </div>
+
+    <div class="category-tabs">
+      <button class="cat-tab active" onclick="setCategory('all',this)">All</button>
+      <button class="cat-tab" onclick="setCategory('characters',this)">Characters</button>
+      <button class="cat-tab" onclick="setCategory('spells',this)">Spells</button>
+      <button class="cat-tab" onclick="setCategory('places',this)">Places</button>
+      <button class="cat-tab" onclick="setCategory('creatures',this)">Creatures</button>
+      <button class="cat-tab" onclick="setCategory('story',this)">Story</button>
+    </div>
+
+    <div class="score-bar">
+      <div class="score-item"><div class="score-label">Question</div><div class="score-value" id="qNum">1</div></div>
+      <div class="score-item"><div class="score-label">Score</div><div class="score-value" id="scoreVal">0</div></div>
+      <div class="score-item"><div class="score-label">House Points</div><div class="score-value" id="housePoints">0</div></div>
+      <div class="score-item"><div class="score-label">Streak 🔥</div><div class="score-value" id="streakVal">0</div></div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+    <div class="question-card" id="questionCard">
+      <div class="question-meta">
+        <span class="q-number" id="qMeta"></span>
+        <span class="difficulty" id="diffBadge"></span>
+      </div>
+      <div class="question-text" id="questionText"></div>
+      <div class="hint-row">
+        <button class="hint-btn" id="hintBtn" onclick="showHint()">📖 Show Hint</button>
+        <div class="hint-box" id="hintBox"></div>
+      </div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+
+    <div class="result-screen" id="resultScreen" style="display:none;">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-score" id="resultScore"></div>
+      <div class="house-points-box" id="resultHousePoints"></div>
+      <div class="result-message" id="resultMessage"></div>
+      <div class="result-btns">
+        <button class="btn-gold" onclick="restartQuiz()">🪄 Play Again!</button>
+        <button class="btn-outline" onclick="showCertificate()">🎓 Get Certificate</button>
+      </div>
+    </div>
+
+    <!-- Certificate -->
+    <div id="certScreen" style="display:none;">
+      <div class="cert-wrap" id="certContent">
+        <span class="cert-corner tl">✦</span><span class="cert-corner tr">✦</span>
+        <span class="cert-corner bl">✦</span><span class="cert-corner br">✦</span>
+        <div class="cert-seal">🏆</div>
+        <div class="cert-hogwarts">Hogwarts School of Witchcraft and Wizardry</div>
+        <div class="cert-title">Certificate of Achievement</div>
+        <div class="cert-divider">— ⚡ —</div>
+        <div class="cert-body">
+          This is to certify that<br>
+          <span class="cert-name">Avyukth</span><br>
+          has demonstrated exceptional wizarding knowledge<br>and achieved a score of
+        </div>
+        <div class="cert-score-big" id="certScore"></div>
+        <div class="cert-meta" id="certMeta"></div>
+        <div class="cert-divider">— ✦ —</div>
+        <div class="cert-date" id="certDate"></div>
+      </div>
+      <div class="result-btns no-print" style="margin-top:18px;">
+        <button class="btn-gold" onclick="window.print()">🖨️ Print Certificate</button>
+        <button class="btn-outline" onclick="backToResult()">← Back</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════ PARENT SCREEN ══════════ -->
+  <div id="parentScreen" class="screen">
+    <div class="parent-gate" id="parentGate">
+      <div style="font-size:48px;margin-bottom:12px;">🔐</div>
+      <h2>📊 Report</h2>
+      <p>Enter your 4-digit PIN to view Avyukth's progress</p>
+      <input type="password" class="pin-input" id="pinInput" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter')checkPin()">
+      <button class="pin-btn" onclick="checkPin()">🔓 Unlock Report</button>
+      <div class="pin-error" id="pinError">❌ Wrong PIN. Try again!</div>
+      <p style="margin-top:16px;font-size:0.82rem;color:#b8a9c966;">Default PIN: <strong style="color:#c39bd3;">1234</strong></p>
+    </div>
+
+    <div class="report-wrap" id="reportWrap">
+      <div class="report-header">
+        <div class="report-title">📊 Avyukth's Progress</div>
+        <button class="report-clear-btn" onclick="clearHistory()">🗑 Clear History</button>
+      </div>
+      <div id="reportContent"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PARENT_PIN = '1234';
+
+const allQuestions = [
+  { q:"What is Harry Potter's owl named?", options:["Hedwig","Errol","Pigwidgeon","Crookshanks"], answer:0, difficulty:"easy", category:"characters", hint:"📗 Book 1 · Ch. 5 — Diagon Alley, inside Eeylops Owl Emporium", feedback:"Hedwig is Harry's beautiful snowy owl — one of his most loyal companions! 🦉" },
+  { q:"What house does Hermione Granger belong to?", options:["Hufflepuff","Slytherin","Ravenclaw","Gryffindor"], answer:3, difficulty:"easy", category:"characters", hint:"📗 Book 1 · Ch. 7 — The Sorting Hat ceremony in the Great Hall", feedback:"Hermione is in Gryffindor, known for bravery and courage! 🦁" },
+  { q:"What are the names of the Weasley twins?", options:["Fred and George","Bill and Charlie","Ron and Percy","George and Harry"], answer:0, difficulty:"easy", category:"characters", hint:"📗 Book 1 · Ch. 6 — Harry first meets the Weasley family at King's Cross", feedback:"Fred and George are the mischievous, funny twins who love pranks! 😄" },
+  { q:"Who is the Keeper of Keys and Grounds at Hogwarts?", options:["Professor Snape","Dumbledore","Hagrid","Filch"], answer:2, difficulty:"easy", category:"characters", hint:"📗 Book 1 · Ch. 4 — A giant stranger arrives at the hut on the rock to deliver Harry's letter", feedback:"Rubeus Hagrid is the Keeper of Keys and Grounds — he loves magical creatures! 🌲" },
+  { q:"What is the name of Neville Longbottom's toad?", options:["Trevor","Crookshanks","Scabbers","Norbert"], answer:0, difficulty:"medium", category:"characters", hint:"📗 Book 1 · Ch. 6 — Neville is frantically searching for something on the Hogwarts Express", feedback:"Trevor the toad is always escaping from Neville! 🐸" },
+  { q:"Which professor teaches Defence Against the Dark Arts in Harry's first year?", options:["Snape","Quirrell","Lockhart","Lupin"], answer:1, difficulty:"medium", category:"characters", hint:"📗 Book 1 · Ch. 8 — Harry's first day of classes at Hogwarts", feedback:"Professor Quirrell teaches DADA — but he's hiding a terrible secret under his turban! 😱" },
+  { q:"What is Draco Malfoy's mother's first name?", options:["Bellatrix","Narcissa","Andromeda","Petunia"], answer:1, difficulty:"hard", category:"characters", hint:"📗 Book 1 · Ch. 5 — Madam Malkin's robe shop in Diagon Alley", feedback:"Narcissa Malfoy is Draco's mother. She loves her son dearly! 🐍" },
+  { q:"What spell does Harry use most often in duels?", options:["Avada Kedavra","Lumos","Expelliarmus","Wingardium Leviosa"], answer:2, difficulty:"easy", category:"spells", hint:"📘 Book 2 · Ch. 11 — The Duelling Club, Harry faces Draco Malfoy", feedback:"Expelliarmus is Harry's signature spell — it disarms your opponent! ⚡" },
+  { q:"What does the spell 'Lumos' do?", options:["Unlocks doors","Creates light","Levitates objects","Turns things invisible"], answer:1, difficulty:"easy", category:"spells", hint:"📗 Book 1 · Ch. 10 — Used during a dark, dangerous situation at Hogwarts at night", feedback:"Lumos lights up the tip of your wand — like a magical torch! 🔦" },
+  { q:"What does 'Wingardium Leviosa' do?", options:["Makes things explode","Makes things fly/levitate","Turns things to stone","Heals wounds"], answer:1, difficulty:"easy", category:"spells", hint:"📗 Book 1 · Ch. 10 — Charms class with Professor Flitwick; Hermione corrects Ron's pronunciation", feedback:"It makes objects levitate — Hermione is very careful about the pronunciation! 🧹" },
+  { q:"What spell unlocks doors?", options:["Expelliarmus","Alohomora","Lumos","Accio"], answer:1, difficulty:"medium", category:"spells", hint:"📗 Book 1 · Ch. 9 — Harry, Ron and Hermione use it to sneak through a locked door on the 3rd floor", feedback:"Alohomora is the unlocking charm — very handy for exploring Hogwarts! 🔑" },
+  { q:"What does the Summoning Charm 'Accio' do?", options:["Sends objects away","Calls objects to you","Shrinks objects","Hides objects"], answer:1, difficulty:"medium", category:"spells", hint:"📙 Book 4 · Ch. 20 — Harry practises very hard for the First Task of the Triwizard Tournament", feedback:"Accio summons objects to you — Harry uses it to summon his broomstick! 🧹" },
+  { q:"What does 'Expecto Patronum' produce?", options:["A shield","A Patronus to fight Dementors","A bright light","A force field"], answer:1, difficulty:"medium", category:"spells", hint:"📘 Book 3 · Ch. 12 — Professor Lupin gives Harry special extra lessons in his office", feedback:"Expecto Patronum conjures a Patronus — a magical guardian that fights Dementors! Harry's is a stag! 🦌" },
+  { q:"What is the name of the bank run by goblins?", options:["Vault & Broomstick","Gringotts","The Leaky Cauldron","Madam Malkin's"], answer:1, difficulty:"easy", category:"places", hint:"📗 Book 1 · Ch. 5 — Hagrid takes Harry to a grand white building to collect some gold", feedback:"Gringotts is the magical bank run by goblins — Harry's gold is kept there! 💰" },
+  { q:"What platform do students use to board the Hogwarts Express?", options:["Platform 10½","Platform 9¾","Platform 8","Platform 7½"], answer:1, difficulty:"easy", category:"places", hint:"📗 Book 1 · Ch. 6 — Harry arrives at King's Cross Station and is confused about where to go", feedback:"Platform 9¾ is hidden at King's Cross — you walk through a magical barrier! 🚂" },
+  { q:"What is the name of the magical village near Hogwarts?", options:["Diagon Alley","Azkaban","Hogsmeade","Little Whinging"], answer:2, difficulty:"easy", category:"places", hint:"📘 Book 3 · Ch. 5 — Third year students receive permission slips to visit a special nearby village", feedback:"Hogsmeade is the only all-wizarding village in Britain! 🏘️" },
+  { q:"Where do Harry's aunt and uncle live?", options:["4 Privet Drive","12 Grimmauld Place","The Burrow","Godric's Hollow"], answer:0, difficulty:"medium", category:"places", hint:"📗 Book 1 · Ch. 2 — The very first line of Chapter 2 names the street Harry lives on", feedback:"4 Privet Drive, Little Whinging — Harry's very un-magical home! 🏠" },
+  { q:"What is the name of the Weasley family home?", options:["The Nest","The Burrow","Shell Cottage","Ottery St. Catchpole"], answer:1, difficulty:"medium", category:"places", hint:"📘 Book 2 · Ch. 3 — Harry arrives by flying car at the Weasley house for the first time", feedback:"The Burrow is the cosy, magical, slightly chaotic Weasley home! 🏚️" },
+  { q:"What is the name of the three-headed dog guarding the trapdoor?", options:["Norbert","Fang","Fluffy","Buckbeak"], answer:2, difficulty:"easy", category:"creatures", hint:"📗 Book 1 · Ch. 9 — Harry, Ron and Hermione accidentally open a forbidden door on the third floor", feedback:"Fluffy is the giant three-headed dog — he falls asleep to music! 🎵" },
+  { q:"What breed is Hagrid's illegal baby dragon?", options:["Hungarian Horntail","Norwegian Ridgeback","Chinese Fireball","Common Welsh Green"], answer:1, difficulty:"medium", category:"creatures", hint:"📗 Book 1 · Ch. 14 — Hagrid wins a mysterious egg from a cloaked stranger in a card game", feedback:"Norbert is a Norwegian Ridgeback — Hagrid raised him from an egg! 🐉" },
+  { q:"What kind of creature is Dobby?", options:["Goblin","Gnome","House-elf","Brownie"], answer:2, difficulty:"easy", category:"creatures", hint:"📘 Book 2 · Ch. 2 — A strange small creature appears in Harry's bedroom at Privet Drive", feedback:"Dobby is a house-elf — he becomes one of Harry's dearest friends! 🧦" },
+  { q:"What does Harry ride in his very first flying lesson?", options:["Hippogriff","Thestral","Unicorn","A broomstick"], answer:3, difficulty:"hard", category:"creatures", hint:"📗 Book 1 · Ch. 9 — First flying lesson on the Hogwarts grounds with Madam Hooch", feedback:"Harry rides a broomstick in his first flying lesson — and he's naturally brilliant! 🧹" },
+  { q:"What sport does Harry play at Hogwarts?", options:["Bludger Ball","Quidditch","Wizard Chess","Broomstick Racing"], answer:1, difficulty:"easy", category:"story", hint:"📗 Book 1 · Ch. 9 — After his flying lesson, Professor McGonagall pulls Harry aside excitedly", feedback:"Quidditch is the magical sport played on broomsticks — Harry is a brilliant Seeker! ⚡" },
+  { q:"What position does Harry play in Quidditch?", options:["Keeper","Beater","Chaser","Seeker"], answer:3, difficulty:"easy", category:"story", hint:"📗 Book 1 · Ch. 9 — Oliver Wood explains to Harry what his special role on the team will be", feedback:"Harry is the Seeker — he must catch the Golden Snitch to win! ✨" },
+  { q:"Where does Harry first discover the Mirror of Erised?", options:["The Forbidden Forest","An empty classroom","The trophy room","The library"], answer:1, difficulty:"medium", category:"story", hint:"📗 Book 1 · Ch. 12 — Harry is hiding from Filch and ducks into an empty room at night", feedback:"Harry stumbles upon the Mirror of Erised hidden in an empty classroom — it shows your deepest desire! 🪞" },
+  { q:"What does Harry find on his 11th birthday that changes his life?", options:["A golden ticket","A letter from Hogwarts","A magic wand","A flying broomstick"], answer:1, difficulty:"easy", category:"story", hint:"📗 Book 1 · Ch. 3 — Hundreds of letters arrive at Privet Drive no matter what the Dursleys do to stop them", feedback:"Harry receives his Hogwarts acceptance letter — Hagrid delivers it personally! 📬" },
+  { q:"What is the last name of the family Harry lives with?", options:["Weasley","Dursley","Longbottom","Potter"], answer:1, difficulty:"easy", category:"story", hint:"📗 Book 1 · Ch. 2 — Chapter 2 is named after this family's address", feedback:"The Dursleys — Uncle Vernon, Aunt Petunia, and cousin Dudley — treat Harry very poorly! 😤" },
+  { q:"What is the name of the object Voldemort seeks in the first book?", options:["The Elder Wand","The Philosopher's Stone","A Horcrux","The Sorting Hat"], answer:1, difficulty:"medium", category:"story", hint:"📗 Book 1 · Ch. 11 — Harry overhears a suspicious conversation between two professors in the forest", feedback:"The Philosopher's Stone can grant immortality — Voldemort desperately wants it! 💎" },
+];
+
+// ── State
+let currentCategory='all', selectedHouse='', houseEmoji='', questions=[], currentIndex=0;
+let score=0, housePointsTotal=0, streak=0, answered=false, categoryScores={}, lastAttempt=null;
+
+// ── Storage
+function getHistory(){ try{ return JSON.parse(localStorage.getItem('avyukth_hp_v2')||'[]'); }catch{ return []; } }
+function saveAttempt(a){ const h=getHistory(); h.push(a); localStorage.setItem('avyukth_hp_v2',JSON.stringify(h)); }
+function clearHistory(){ if(confirm("Clear all of Avyukth's quiz history?")){ localStorage.removeItem('avyukth_hp_v2'); renderReport(); } }
+
+// ── Nav
+function switchScreen(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── House / Category
+function selectHouse(house,emoji,btn){
+  selectedHouse=house; houseEmoji=emoji;
+  document.querySelectorAll('.house-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setCategory(cat,btn){
+  currentCategory=cat;
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  restartQuiz();
+}
+
+// ── Quiz
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+function startQuiz(){
+  let pool=currentCategory==='all'?allQuestions:allQuestions.filter(q=>q.category===currentCategory);
+  questions=shuffle(pool).slice(0,10);
+  currentIndex=0; score=0; housePointsTotal=0; streak=0; answered=false; categoryScores={};
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('certScreen').style.display='none';
+  document.getElementById('questionCard').style.display='block';
+  showQuestion();
+}
+
+function showQuestion(){
+  if(currentIndex>=questions.length){ showResult(); return; }
+  answered=false;
+  const q=questions[currentIndex];
+  document.getElementById('qNum').textContent=currentIndex+1;
+  document.getElementById('qMeta').textContent=`Question ${currentIndex+1} of ${questions.length}`;
+  document.getElementById('progressBar').style.width=`${(currentIndex/questions.length)*100}%`;
+  const badge=document.getElementById('diffBadge');
+  badge.textContent=q.difficulty.charAt(0).toUpperCase()+q.difficulty.slice(1);
+  badge.className='difficulty diff-'+q.difficulty;
+  document.getElementById('questionText').textContent=q.q;
+  document.getElementById('feedback').style.display='none';
+  document.getElementById('nextBtn').style.display='none';
+  const hb=document.getElementById('hintBox'), hBtn=document.getElementById('hintBtn');
+  hb.classList.remove('visible'); hb.textContent=''; hBtn.textContent='📖 Show Hint';
+  const letters=['A','B','C','D'];
+  const container=document.getElementById('optionsContainer');
+  container.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='option-btn';
+    btn.innerHTML=`<span class="option-letter">${letters[i]}</span>${opt}`;
+    btn.onclick=()=>selectAnswer(i,btn);
+    container.appendChild(btn);
+  });
+}
+
+function selectAnswer(index,btn){
+  if(answered) return;
+  answered=true;
+  const q=questions[currentIndex];
+  const allBtns=document.querySelectorAll('.option-btn');
+  allBtns.forEach(b=>b.disabled=true);
+  const feedback=document.getElementById('feedback');
+  const pts=q.difficulty==='easy'?10:q.difficulty==='medium'?20:30;
+  if(!categoryScores[q.category]) categoryScores[q.category]={correct:0,total:0};
+  categoryScores[q.category].total++;
+  if(index===q.answer){
+    btn.classList.add('correct'); score++; streak++;
+    housePointsTotal+=pts+(streak>2?10:0);
+    categoryScores[q.category].correct++;
+    feedback.className='feedback correct-fb';
+    feedback.innerHTML=`✅ Excellent! +${pts} house points!${streak>2?` <br>🔥 ${streak}-answer streak! Bonus +10!`:''}<br><br>${q.feedback}`;
+  } else {
+    btn.classList.add('wrong'); allBtns[q.answer].classList.add('correct'); streak=0;
+    feedback.className='feedback wrong-fb';
+    feedback.innerHTML=`❌ Not quite! The answer was: <strong>${q.options[q.answer]}</strong><br><br>${q.feedback}`;
+  }
+  feedback.style.display='block';
+  document.getElementById('nextBtn').style.display='block';
+  document.getElementById('scoreVal').textContent=score;
+  document.getElementById('housePoints').textContent=housePointsTotal;
+  document.getElementById('streakVal').textContent=streak;
+}
+
+function showHint(){
+  const q=questions[currentIndex];
+  const hb=document.getElementById('hintBox'), hBtn=document.getElementById('hintBtn');
+  if(hb.classList.contains('visible')){ hb.classList.remove('visible'); hBtn.textContent='📖 Show Hint'; }
+  else { hb.textContent=q.hint; hb.classList.add('visible'); hBtn.textContent='🙈 Hide Hint'; }
+}
+
+function nextQuestion(){ currentIndex++; showQuestion(); }
+
+function showResult(){
+  document.getElementById('questionCard').style.display='none';
+  document.getElementById('progressBar').style.width='100%';
+  document.getElementById('resultScreen').style.display='block';
+  const pct=score/questions.length;
+  let emoji,title,message;
+  if(pct===1){emoji='🏆';title='PERFECT SCORE!';message='"It does not do to dwell on dreams and forget to live." — But you, Avyukth, are LIVING the wizarding world! Absolutely magical!';}
+  else if(pct>=0.8){emoji='⚡';title='Outstanding!';message='"I solemnly swear I am up to no good" — Avyukth, you clearly know your Harry Potter! Dumbledore would be proud.';}
+  else if(pct>=0.6){emoji='🦁';title='Well Done!';message='"It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends." — Keep reading and you\'ll be a Hogwarts expert!';}
+  else{emoji='📚';title='Keep Practicing!';message='"It is our choices that show what we truly are, far more than our abilities." — Try again and you\'ll do even better!';}
+  document.getElementById('resultEmoji').textContent=emoji;
+  document.getElementById('resultTitle').textContent=title;
+  document.getElementById('resultScore').textContent=`${score} out of ${questions.length} correct`;
+  document.getElementById('resultHousePoints').innerHTML=`${houseEmoji||'🏰'} ${selectedHouse||'Your'} House earned <strong>${housePointsTotal} points!</strong>`;
+  document.getElementById('resultMessage').textContent=message;
+  lastAttempt={date:new Date().toISOString(),score,total:questions.length,housePoints:housePointsTotal,house:selectedHouse||'—',houseEmoji:houseEmoji||'🏰',category:currentCategory,categoryScores:{...categoryScores}};
+  saveAttempt(lastAttempt);
+}
+
+function restartQuiz(){
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('certScreen').style.display='none';
+  document.getElementById('questionCard').style.display='block';
+  startQuiz();
+}
+
+// ── Certificate
+function showCertificate(){
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('certScreen').style.display='block';
+  const s=lastAttempt||{score,total:questions.length,housePoints:housePointsTotal,house:selectedHouse||'—',houseEmoji:houseEmoji||'🏰',category:currentCategory};
+  const pct=s.score/s.total;
+  const grade=pct===1?'Outstanding ✦':pct>=0.8?'Exceeds Expectations':pct>=0.6?'Acceptable':'Keep Practising';
+  const catLabel=s.category==='all'?'All Categories':s.category.charAt(0).toUpperCase()+s.category.slice(1);
+  document.getElementById('certScore').textContent=`${s.score} / ${s.total}`;
+  document.getElementById('certMeta').innerHTML=`Category: ${catLabel} &nbsp;·&nbsp; Grade: ${grade}<br><br>${s.houseEmoji} ${s.house} House &nbsp;·&nbsp; ${s.housePoints} House Points Earned`;
+  document.getElementById('certDate').textContent=`Awarded on ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}`;
+}
+function backToResult(){
+  document.getElementById('certScreen').style.display='none';
+  document.getElementById('resultScreen').style.display='block';
+}
+
+// ── Parent report
+function checkPin(){
+  const pin=document.getElementById('pinInput').value;
+  if(pin===PARENT_PIN){
+    document.getElementById('parentGate').style.display='none';
+    document.getElementById('reportWrap').classList.add('visible');
+    renderReport();
+  } else {
+    document.getElementById('pinError').style.display='block';
+    document.getElementById('pinInput').value='';
+  }
+}
+
+const CAT_COLORS={characters:'#e74c3c',spells:'#9b59b6',places:'#2980b9',creatures:'#27ae60',story:'#f39c12'};
+
+function renderReport(){
+  const history=getHistory();
+  const el=document.getElementById('reportContent');
+  if(!history.length){
+    el.innerHTML='<div class="no-data">🧙 No quiz attempts yet!<br>Avyukth needs to play a few quizzes first,<br>then come back here to see his progress.</div>';
+    return;
+  }
+  const totalAttempts=history.length;
+  const avgPct=(history.reduce((a,h)=>a+h.score/h.total,0)/totalAttempts*100).toFixed(0);
+  const bestPct=Math.max(...history.map(h=>Math.round(h.score/h.total*100)));
+  const totalHP=history.reduce((a,h)=>a+(h.housePoints||0),0);
+
+  // Trend
+  let trendHTML='';
+  if(history.length>=3){
+    const half=Math.ceil(history.length/2);
+    const earlyAvg=history.slice(0,half).reduce((a,h)=>a+h.score/h.total,0)/half;
+    const lateAvg=history.slice(half).reduce((a,h)=>a+h.score/h.total,0)/(history.length-half);
+    if(lateAvg>earlyAvg+0.05) trendHTML=`<div class="trend-note">📈 Improving! Recent average ${(lateAvg*100).toFixed(0)}% vs earlier ${(earlyAvg*100).toFixed(0)}%. Avyukth is getting better! 🌟</div>`;
+    else if(lateAvg<earlyAvg-0.05) trendHTML=`<div class="weak-note">📉 Recent scores (${(lateAvg*100).toFixed(0)}%) are a little lower than before (${(earlyAvg*100).toFixed(0)}%). A bit of revision might help!</div>`;
+    else trendHTML=`<div class="trend-note">➡️ Consistent performance at ~${(lateAvg*100).toFixed(0)}%. Try harder categories to push further!</div>`;
+  }
+
+  // Category breakdown
+  const catTotals={};
+  history.forEach(h=>{ if(h.categoryScores) Object.entries(h.categoryScores).forEach(([cat,val])=>{ if(!catTotals[cat]) catTotals[cat]={correct:0,total:0}; catTotals[cat].correct+=val.correct; catTotals[cat].total+=val.total; }); });
+  const catBars=Object.entries(catTotals).sort((a,b)=>b[1].correct/b[1].total-a[1].correct/a[1].total).map(([cat,val])=>{
+    const pct=Math.round(val.correct/val.total*100);
+    const color=CAT_COLORS[cat]||'#f5c842';
+    const emoji={characters:'👤',spells:'✨',places:'🏰',creatures:'🐉',story:'📖'}[cat]||'📚';
+    return `<div class="cat-row"><div class="cat-row-header"><span>${emoji} ${cat.charAt(0).toUpperCase()+cat.slice(1)}</span><span>${pct}% (${val.correct}/${val.total})</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${pct}%;background:${color};"></div></div></div>`;
+  }).join('');
+
+  // Weakest category
+  let weakHTML='';
+  const weakCats=Object.entries(catTotals).filter(([,v])=>v.total>=2).sort((a,b)=>a[1].correct/a[1].total-b[1].correct/b[1].total);
+  if(weakCats.length){ const [wc,wv]=weakCats[0]; const wp=Math.round(wv.correct/wv.total*100); if(wp<70) weakHTML=`<div class="weak-note">⚠️ Weakest area: <strong>${wc.charAt(0).toUpperCase()+wc.slice(1)}</strong> (${wp}% correct). Practice this category for a big boost!</div>`; }
+
+  // Attempts list
+  const attemptsHTML=[...history].reverse().slice(0,15).map(h=>{
+    const d=new Date(h.date);
+    const dateStr=d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    const timeStr=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    const pct=Math.round(h.score/h.total*100);
+    const color=pct>=80?'#2ecc71':pct>=60?'#f5c842':'#e74c3c';
+    const catLabel=h.category==='all'?'All':h.category.charAt(0).toUpperCase()+h.category.slice(1);
+    return `<div class="attempt-row"><div><div class="attempt-date">📅 ${dateStr} at ${timeStr}</div><div class="attempt-cat">📚 ${catLabel} · ${h.houseEmoji||'🏰'} ${h.house||'—'}</div></div><div style="text-align:right"><div class="attempt-score" style="color:${color}">${h.score}/${h.total} (${pct}%)</div><div class="attempt-house">🏆 ${h.housePoints||0} pts</div></div></div>`;
+  }).join('');
+
+  el.innerHTML=`
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${totalAttempts}</div><div class="stat-lbl">Attempts</div></div>
+      <div class="stat-card"><div class="stat-val">${avgPct}%</div><div class="stat-lbl">Avg Score</div></div>
+      <div class="stat-card"><div class="stat-val">${bestPct}%</div><div class="stat-lbl">Best Score</div></div>
+      <div class="stat-card"><div class="stat-val">${totalHP}</div><div class="stat-lbl">House Pts</div></div>
+    </div>
+    ${trendHTML}${weakHTML}
+    ${catBars?`<div class="report-section"><div class="section-title">📊 Performance by Category</div>${catBars}</div>`:''}
+    <div class="report-section"><div class="section-title">🕰️ Recent Attempts</div>${attemptsHTML}</div>
+  `;
+}
+
+startQuiz();
+</script>
+</body>
+</html>
