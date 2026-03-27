@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House Points ⚡</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #f5c842; --gold-dim: rgba(245,200,66,0.15);
+    --ink: #0f0c1a; --ink2: #1c1730; --ink3: #241f3a;
+    --parchment: #faf7f0; --muted: #8b7fa8;
+    --green: #22c55e; --green-dim: rgba(34,197,94,0.12);
+    --red: #ef4444; --red-dim: rgba(239,68,68,0.12);
+    --radius: 16px;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--ink); color: var(--parchment);
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  /* starfield */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(1px 1px at 10% 8%,  rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 25% 20%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 50% 5%,  rgba(255,255,255,0.7), transparent),
+      radial-gradient(1px 1px at 72% 14%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 88% 28%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 15% 60%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 80% 80%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 35% 90%, rgba(255,255,255,0.4), transparent);
+  }
+
+  .page { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 0 18px 80px; }
+
+  /* back link */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 14px 0 0; font-size: 0.85rem; color: var(--muted);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold); }
+
+  /* header */
+  .hero { text-align: center; padding: 36px 0 40px; }
+  .hero-emoji { font-size: 3.2rem; display: block; margin-bottom: 12px;
+    animation: float 4s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .hero-eyebrow { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 4px;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 10px; opacity: 0.8; }
+  .hero-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.8rem,5vw,2.8rem);
+    font-weight: 900; background: linear-gradient(135deg,#f5c842 0%,#fff8e0 45%,#e8a020 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 10px; }
+  .hero-sub { font-size: 0.95rem; color: rgba(250,247,240,0.55); max-width: 420px; margin: 0 auto; }
+
+  /* config notice */
+  .config-notice {
+    background: rgba(239,68,68,0.1); border: 1.5px solid rgba(239,68,68,0.35);
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 24px;
+    font-size: 0.88rem; color: #fca5a5; display: none; line-height: 1.6;
+  }
+  .config-notice.visible { display: block; }
+  .config-notice strong { color: #f87171; }
+
+  /* stats row */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--ink2); border: 1px solid rgba(245,200,66,0.2);
+    border-radius: var(--radius); padding: 18px 14px; text-align: center;
+  }
+  .stat-card.highlight { border-color: rgba(245,200,66,0.5); background: rgba(245,200,66,0.07); }
+  .stat-val { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 600;
+    color: var(--gold); display: block; line-height: 1; }
+  .stat-lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 1.5px; margin-top: 5px; }
+  .stat-rupee { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 600;
+    color: #4ade80; display: block; line-height: 1; }
+
+  /* progress bar */
+  .month-progress { background: var(--ink2); border: 1px solid rgba(245,200,66,0.15);
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 24px; }
+  .mp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .mp-title { font-size: 0.82rem; font-weight: 700; color: var(--parchment); }
+  .mp-pct { font-size: 0.82rem; color: var(--gold); font-weight: 700; }
+  .mp-track { background: rgba(255,255,255,0.06); border-radius: 8px; height: 12px; overflow: hidden; position: relative; }
+  .mp-fill { height: 100%; border-radius: 8px;
+    background: linear-gradient(90deg,#7c3aed,#f5c842);
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+  .mp-sub { font-size: 0.78rem; color: var(--muted); margin-top: 7px; }
+
+  /* add points card */
+  .add-card {
+    background: var(--ink2); border: 1.5px solid rgba(245,200,66,0.3);
+    border-radius: var(--radius); padding: 22px 20px; margin-bottom: 24px;
+  }
+  .add-card h3 { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  @media(max-width:500px){ .form-row{ grid-template-columns:1fr; } }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 0.78rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; }
+
+  select, input[type="date"], input[type="text"] {
+    background: var(--ink3); border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 11px 14px;
+    font-family: 'Nunito', sans-serif; font-size: 0.92rem;
+    color: var(--parchment); outline: none; width: 100%;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  select:focus, input:focus { border-color: rgba(245,200,66,0.5); }
+  select option { background: #1c1730; }
+
+  .other-input { display: none; margin-top: 10px; }
+  .other-input.visible { display: block; }
+
+  .add-btn {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg,#f5c842,#e67e22);
+    border: none; border-radius: 12px;
+    font-family: 'Nunito', sans-serif; font-size: 1.05rem; font-weight: 800;
+    color: #1a0a2e; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .add-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,200,66,0.3); }
+  .add-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .add-feedback {
+    margin-top: 12px; padding: 10px 14px; border-radius: 10px;
+    font-size: 0.88rem; font-weight: 700; text-align: center;
+    display: none;
+  }
+  .add-feedback.success { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; display: block; }
+  .add-feedback.error   { background: var(--red-dim);   border: 1px solid rgba(239,68,68,0.3);   color: #f87171; display: block; }
+  .add-feedback.dupe    { background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); color: var(--gold); display: block; }
+
+  /* calendar */
+  .calendar-card {
+    background: var(--ink2); border: 1px solid rgba(245,200,66,0.15);
+    border-radius: var(--radius); padding: 22px 20px; margin-bottom: 24px;
+  }
+  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .cal-title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); }
+  .cal-nav { display: flex; gap: 8px; align-items: center; }
+  .cal-nav-btn {
+    background: var(--ink3); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 6px 12px; color: var(--parchment);
+    font-family: 'Nunito', sans-serif; font-size: 0.88rem; cursor: pointer;
+    transition: all 0.18s;
+  }
+  .cal-nav-btn:hover { border-color: rgba(245,200,66,0.4); color: var(--gold); }
+  .cal-month-label { font-size: 0.88rem; font-weight: 700; color: var(--parchment); min-width: 110px; text-align: center; }
+
+  .cal-weekdays { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 6px; }
+  .cal-weekday { text-align: center; font-size: 0.7rem; font-weight: 700;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 1px; padding: 4px 0; }
+
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; }
+
+  .cal-day {
+    aspect-ratio: 1; border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 0.82rem; font-weight: 700; position: relative;
+    background: var(--ink3); border: 1px solid rgba(255,255,255,0.05);
+    cursor: default; transition: all 0.18s;
+    min-height: 42px;
+  }
+  .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+  .cal-day.today { border-color: rgba(245,200,66,0.5); }
+  .cal-day.today .cal-day-num { color: var(--gold); }
+  .cal-day.future { opacity: 0.3; }
+  .cal-day.has-points { cursor: pointer; }
+  .cal-day.has-points:hover { transform: scale(1.06); border-color: rgba(245,200,66,0.4); }
+
+  .cal-day-num { font-size: 0.78rem; line-height: 1; }
+  .cal-day-pts {
+    font-size: 0.68rem; font-weight: 800;
+    background: linear-gradient(135deg,#7c3aed,#f5c842);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1; margin-top: 2px;
+  }
+  .cal-day-dot-row { display: flex; gap: 2px; margin-top: 2px; flex-wrap: wrap; justify-content: center; }
+  .cal-dot { width: 4px; height: 4px; border-radius: 50%; }
+
+  /* tooltip / popup */
+  .day-popup {
+    position: fixed; z-index: 100;
+    background: var(--ink2); border: 1.5px solid rgba(245,200,66,0.4);
+    border-radius: 14px; padding: 16px 18px;
+    min-width: 200px; max-width: 260px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    display: none;
+  }
+  .day-popup.visible { display: block; }
+  .popup-date { font-family: 'Cinzel', serif; font-size: 0.82rem; color: var(--gold); margin-bottom: 10px; }
+  .popup-activity { display: flex; align-items: center; gap: 8px; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; color: var(--parchment); }
+  .popup-activity:last-child { border-bottom: none; }
+  .popup-activity-icon { font-size: 1rem; flex-shrink: 0; }
+  .popup-total { margin-top: 10px; font-size: 0.8rem; font-weight: 700;
+    color: var(--gold); text-align: right; }
+
+  /* activity breakdown */
+  .breakdown-card {
+    background: var(--ink2); border: 1px solid rgba(245,200,66,0.15);
+    border-radius: var(--radius); padding: 22px 20px; margin-bottom: 24px;
+  }
+  .breakdown-title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); margin-bottom: 16px; }
+  .breakdown-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .breakdown-row:last-child { margin-bottom: 0; }
+  .breakdown-icon { font-size: 1.3rem; width: 32px; text-align: center; flex-shrink: 0; }
+  .breakdown-label { flex: 1; font-size: 0.88rem; font-weight: 600; color: var(--parchment); }
+  .breakdown-track { flex: 2; background: rgba(255,255,255,0.06); border-radius: 6px; height: 8px; overflow: hidden; }
+  .breakdown-fill { height: 100%; border-radius: 6px; transition: width 0.8s ease; }
+  .breakdown-count { font-size: 0.82rem; font-weight: 800; color: var(--gold); min-width: 28px; text-align: right; }
+
+  /* loading spinner */
+  .loading { text-align: center; padding: 32px; color: var(--muted); font-size: 0.9rem; }
+  .spinner { display: inline-block; width: 22px; height: 22px; border: 2px solid rgba(245,200,66,0.2);
+    border-top-color: var(--gold); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* setup instructions */
+  .setup-card {
+    background: rgba(245,200,66,0.05); border: 1.5px solid rgba(245,200,66,0.25);
+    border-radius: var(--radius); padding: 24px 22px; margin-bottom: 24px;
+  }
+  .setup-card h3 { font-family:'Cinzel',serif; font-size:1rem; color:var(--gold); margin-bottom:14px; }
+  .setup-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+  .setup-num { width: 26px; height: 26px; border-radius: 50%; background: rgba(245,200,66,0.15);
+    border: 1px solid rgba(245,200,66,0.3); color: var(--gold); font-size: 0.78rem;
+    font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .setup-text { font-size: 0.88rem; color: rgba(250,247,240,0.75); line-height: 1.6; }
+  .setup-text code { background: rgba(255,255,255,0.08); border-radius: 4px;
+    padding: 1px 6px; font-size: 0.82rem; color: #fbbf24; font-family: monospace; }
+  .setup-text a { color: var(--gold); }
+
+  .setup-url-input {
+    width: 100%; background: var(--ink3); border: 1.5px solid rgba(245,200,66,0.3);
+    border-radius: 10px; padding: 11px 14px; font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem; color: var(--parchment); outline: none; margin-top: 10px;
+  }
+  .setup-url-input:focus { border-color: rgba(245,200,66,0.6); }
+  .setup-save-btn {
+    margin-top: 10px; padding: 10px 24px;
+    background: linear-gradient(135deg,#f5c842,#e67e22);
+    border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem; font-weight: 800; color: #1a0a2e; cursor: pointer;
+  }
+
+  @media(max-width:480px){
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .stats-row .stat-card:last-child { grid-column: 1/-1; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a href="index.html" class="back-link">← Back to Avyukth's World</a>
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">⚡</span>
+    <div class="hero-eyebrow">Avyukth's Tracker</div>
+    <h1 class="hero-title">House Points</h1>
+    <p class="hero-sub">Every good habit earns a point. Every point earns ₹1. Log your day and watch your pocket money grow!</p>
+  </div>
+
+  <!-- SETUP (shown only if URL not configured) -->
+  <div class="setup-card" id="setupCard">
+    <h3>🔧 One-time setup — connect your Google Sheet</h3>
+    <div class="setup-step">
+      <div class="setup-num">1</div>
+      <div class="setup-text">Go to <a href="https://sheets.google.com" target="_blank">sheets.google.com</a> and create a new spreadsheet. Name it <strong>Avyukth House Points</strong>. The first sheet should have these column headers in row 1: <code>date</code> &nbsp;<code>activity</code> &nbsp;<code>note</code> &nbsp;<code>timestamp</code></div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">2</div>
+      <div class="setup-text">In your Google Sheet, go to <strong>Extensions → Apps Script</strong>. Delete any existing code and paste in the script from the <code>google-apps-script.js</code> file that came with this page. Click <strong>Save</strong>, then <strong>Deploy → New deployment</strong>. Choose type <strong>Web app</strong>, set "Execute as" to <strong>Me</strong> and "Who has access" to <strong>Anyone</strong>. Click Deploy and copy the Web App URL.</div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">3</div>
+      <div class="setup-text">Paste the Web App URL below and click Save. That's it — House Points is ready!</div>
+    </div>
+    <input type="text" class="setup-url-input" id="setupUrlInput" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+    <br>
+    <button class="setup-save-btn" onclick="saveScriptUrl()">💾 Save &amp; Connect</button>
+  </div>
+
+  <!-- CONFIG NOTICE -->
+  <div class="config-notice" id="configNotice">
+    <strong>⚠️ Not connected yet.</strong> Complete the setup above to start logging points. Once connected, this notice will disappear.
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card highlight">
+      <span class="stat-val" id="statMonthPoints">—</span>
+      <span class="stat-lbl" id="statMonthLabel">This month</span>
+    </div>
+    <div class="stat-card highlight">
+      <span class="stat-rupee" id="statRupees">—</span>
+      <span class="stat-lbl">Pocket money 💰</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="statStreak">—</span>
+      <span class="stat-lbl">Day streak 🔥</span>
+    </div>
+  </div>
+
+  <!-- MONTH PROGRESS -->
+  <div class="month-progress" id="monthProgress">
+    <div class="mp-header">
+      <span class="mp-title" id="mpTitle">March 2026 Progress</span>
+      <span class="mp-pct" id="mpPct">0%</span>
+    </div>
+    <div class="mp-track">
+      <div class="mp-fill" id="mpFill" style="width:0%"></div>
+    </div>
+    <div class="mp-sub" id="mpSub">0 of 180 possible points this month</div>
+  </div>
+
+  <!-- ADD POINTS CARD -->
+  <div class="add-card">
+    <h3>✨ Log a Point</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Activity</label>
+        <select id="activitySelect" onchange="handleActivityChange()">
+          <option value="">Choose activity…</option>
+          <option value="Table Tennis Coaching" data-icon="🏓">🏓 Table Tennis Coaching</option>
+          <option value="Piano Practice"         data-icon="🎹">🎹 Piano Practice</option>
+          <option value="Hanging Exercise"        data-icon="🤸">🤸 Hanging Exercise</option>
+          <option value="Reading"                 data-icon="📚">📚 Reading</option>
+          <option value="Daily Cleanliness"       data-icon="🧹">🧹 Daily Cleanliness</option>
+          <option value="Other"                   data-icon="⭐">⭐ Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" id="dateInput">
+      </div>
+    </div>
+    <div class="other-input" id="otherInput">
+      <div class="form-group">
+        <label class="form-label">Describe what you did</label>
+        <input type="text" id="otherText" placeholder="e.g. helped tidy up the house…" maxlength="80">
+      </div>
+    </div>
+    <button class="add-btn" id="addBtn" onclick="addPoint()" disabled>
+      <span id="addBtnText">➕ Add Point</span>
+    </button>
+    <div class="add-feedback" id="addFeedback"></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="calendar-card">
+    <div class="cal-header">
+      <span class="cal-title" id="calTitle">March 2026</span>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="changeCalMonth(-1)">‹</button>
+        <span class="cal-month-label" id="calMonthLabel">Mar 2026</span>
+        <button class="cal-nav-btn" onclick="changeCalMonth(1)">›</button>
+      </div>
+    </div>
+    <div class="cal-weekdays">
+      <div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div>
+      <div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div>
+      <div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div>
+      <div class="cal-weekday">Sat</div>
+    </div>
+    <div class="cal-grid" id="calGrid">
+      <div class="loading"><span class="spinner"></span>Loading…</div>
+    </div>
+  </div>
+
+  <!-- BREAKDOWN -->
+  <div class="breakdown-card">
+    <div class="breakdown-title" id="breakdownTitle">📊 This month's breakdown</div>
+    <div id="breakdownContent"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+  </div>
+
+</div><!-- end page -->
+
+<!-- DAY POPUP -->
+<div class="day-popup" id="dayPopup"></div>
+
+<!-- GOOGLE APPS SCRIPT CODE (for reference) -->
+<script id="gasCode" type="text/template">
+// ── PASTE THIS INTO GOOGLE APPS SCRIPT ──
+// Extensions > Apps Script > paste > save > deploy as web app
+
+const SHEET_NAME = 'Sheet1';
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    sheet.appendRow([data.date, data.activity, data.note || '', new Date().toISOString()]);
+    return ContentService.createTextOutput(JSON.stringify({ok: true}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ok: false, error: err.message}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const rows = sheet.getDataRange().getValues();
+    const entries = [];
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][0]) {
+        entries.push({ date: rows[i][0], activity: rows[i][1], note: rows[i][2] });
+      }
+    }
+    const result = ContentService.createTextOutput(JSON.stringify({ok: true, entries}))
+      .setMimeType(ContentService.MimeType.JSON);
+    return result;
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ok: false, error: err.message}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+</script>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const RUPEES_PER_POINT = 1;
+const ACTIVITY_ICONS = {
+  'Table Tennis Coaching': '🏓',
+  'Piano Practice':        '🎹',
+  'Hanging Exercise':      '🤸',
+  'Reading':               '📚',
+  'Daily Cleanliness':     '🧹',
+  'Other':                 '⭐',
+};
+const ACTIVITY_COLORS = {
+  'Table Tennis Coaching': '#3b82f6',
+  'Piano Practice':        '#8b5cf6',
+  'Hanging Exercise':      '#22c55e',
+  'Reading':               '#f59e0b',
+  'Daily Cleanliness':     '#ec4899',
+  'Other':                 '#94a3b8',
+};
+
+// ── STATE ───────────────────────────────────────────────────────────────────
+let scriptUrl = localStorage.getItem('hp_script_url') || '';
+let allEntries = []; // {date: 'YYYY-MM-DD', activity, note}
+let calYear, calMonth; // currently viewed calendar month
+let isLoading = false;
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+function init() {
+  const today = new Date();
+  calYear  = today.getFullYear();
+  calMonth = today.getMonth(); // 0-indexed
+
+  // Set date input to today, min = 7 days ago, max = today
+  const dateEl = document.getElementById('dateInput');
+  const todayStr = toDateStr(today);
+  const minDate = new Date(today); minDate.setDate(minDate.getDate() - 7);
+  dateEl.value = todayStr;
+  dateEl.max   = todayStr;
+  dateEl.min   = toDateStr(minDate);
+
+  if (scriptUrl) {
+    document.getElementById('setupCard').style.display = 'none';
+    document.getElementById('setupUrlInput').value = scriptUrl;
+    loadEntries();
+  } else {
+    document.getElementById('configNotice').classList.add('visible');
+    renderCalendar();
+    renderBreakdown();
+    renderStats();
+    enableAddBtn();
+  }
+
+  // close popup on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.cal-day') && !e.target.closest('.day-popup')) {
+      document.getElementById('dayPopup').classList.remove('visible');
+    }
+  });
+}
+
+function toDateStr(d) {
+  return d.toISOString().split('T')[0];
+}
+
+// ── SCRIPT URL SETUP ─────────────────────────────────────────────────────────
+function saveScriptUrl() {
+  const val = document.getElementById('setupUrlInput').value.trim();
+  if (!val.startsWith('https://script.google.com')) {
+    alert('Please paste a valid Google Apps Script Web App URL.');
+    return;
+  }
+  scriptUrl = val;
+  localStorage.setItem('hp_script_url', scriptUrl);
+  document.getElementById('setupCard').style.display = 'none';
+  document.getElementById('configNotice').classList.remove('visible');
+  loadEntries();
+}
+
+// ── LOAD FROM SHEETS ─────────────────────────────────────────────────────────
+async function loadEntries() {
+  if (!scriptUrl) { renderCalendar(); renderBreakdown(); renderStats(); enableAddBtn(); return; }
+  try {
+    const res = await fetch(scriptUrl, { method: 'GET' });
+    const data = await res.json();
+    if (data.ok) {
+      allEntries = data.entries.map(e => ({
+        date:     String(e.date).trim().substring(0,10),
+        activity: String(e.activity).trim(),
+        note:     String(e.note || '').trim(),
+      }));
+    }
+  } catch(err) {
+    console.error('Load error', err);
+  }
+  renderCalendar();
+  renderBreakdown();
+  renderStats();
+  enableAddBtn();
+}
+
+// ── ADD POINT ─────────────────────────────────────────────────────────────────
+async function addPoint() {
+  const activity = document.getElementById('activitySelect').value;
+  const date     = document.getElementById('dateInput').value;
+  const note     = document.getElementById('otherText').value.trim();
+
+  if (!activity || !date) return;
+  if (activity === 'Other' && !note) {
+    showFeedback('dupe', '✏️ Please describe what you did!'); return;
+  }
+
+  // Check for duplicate (same date + same activity)
+  const label = activity === 'Other' ? 'Other' : activity;
+  const dupe = allEntries.find(e => e.date === date && e.activity === label);
+  if (dupe) {
+    showFeedback('dupe', `⚡ You already logged ${label} for ${formatDate(date)}!`); return;
+  }
+
+  const btn = document.getElementById('addBtn');
+  const btnText = document.getElementById('addBtnText');
+  btn.disabled = true;
+  btnText.innerHTML = '<span class="spinner"></span> Saving…';
+
+  const entry = { date, activity: label, note: activity === 'Other' ? note : '' };
+
+  if (scriptUrl) {
+    try {
+      await fetch(scriptUrl, {
+        method: 'POST',
+        body: JSON.stringify(entry),
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+      });
+    } catch(e) { console.warn('Post error', e); }
+  }
+
+  // Optimistically add locally
+  allEntries.push(entry);
+  localStorage.setItem('hp_local_entries', JSON.stringify(allEntries));
+
+  // Reset form
+  document.getElementById('activitySelect').value = '';
+  document.getElementById('otherInput').classList.remove('visible');
+  document.getElementById('otherText').value = '';
+  document.getElementById('dateInput').value = toDateStr(new Date());
+
+  renderCalendar();
+  renderBreakdown();
+  renderStats();
+
+  btnText.innerHTML = '➕ Add Point';
+  enableAddBtn();
+  showFeedback('success', `🎉 +1 point added for ${ACTIVITY_ICONS[label]||'⭐'} ${label} on ${formatDate(date)}!`);
+
+  // Reload from sheet in background after short delay
+  if (scriptUrl) setTimeout(loadEntries, 2000);
+}
+
+function enableAddBtn() {
+  document.getElementById('addBtn').disabled = false;
+}
+
+function showFeedback(type, msg) {
+  const el = document.getElementById('addFeedback');
+  el.className = 'add-feedback ' + type;
+  el.textContent = msg;
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.className = 'add-feedback'; }, 3500);
+}
+
+// ── FORM HELPERS ──────────────────────────────────────────────────────────────
+function handleActivityChange() {
+  const val = document.getElementById('activitySelect').value;
+  document.getElementById('otherInput').classList.toggle('visible', val === 'Other');
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function renderStats() {
+  const today = new Date();
+  const y = today.getFullYear(), m = today.getMonth();
+  const monthStr = `${y}-${String(m+1).padStart(2,'0')}`;
+
+  const monthEntries = allEntries.filter(e => e.date.startsWith(monthStr));
+  const monthPts = monthEntries.length;
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const maxPossible = daysInMonth * 6;
+
+  document.getElementById('statMonthPoints').textContent = monthPts;
+  document.getElementById('statRupees').textContent = '₹' + monthPts;
+  document.getElementById('statMonthLabel').textContent = today.toLocaleString('default',{month:'long'});
+
+  // streak
+  let streak = 0;
+  const check = new Date(today);
+  while (true) {
+    const ds = toDateStr(check);
+    if (allEntries.find(e => e.date === ds)) { streak++; check.setDate(check.getDate()-1); }
+    else break;
+    if (streak > 365) break;
+  }
+  document.getElementById('statStreak').textContent = streak;
+
+  // progress bar
+  const pct = Math.round(monthPts / maxPossible * 100);
+  document.getElementById('mpTitle').textContent =
+    today.toLocaleString('default',{month:'long'}) + ' ' + y + ' Progress';
+  document.getElementById('mpPct').textContent = pct + '%';
+  document.getElementById('mpFill').style.width = pct + '%';
+  document.getElementById('mpSub').textContent =
+    `${monthPts} of ${maxPossible} possible points this month`;
+}
+
+// ── CALENDAR ──────────────────────────────────────────────────────────────────
+function changeCalMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  const today = new Date();
+  const todayStr = toDateStr(today);
+
+  const monthStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}`;
+  document.getElementById('calMonthLabel').textContent =
+    new Date(calYear, calMonth, 1).toLocaleString('default',{month:'short',year:'numeric'});
+  document.getElementById('calTitle').textContent =
+    new Date(calYear, calMonth, 1).toLocaleString('default',{month:'long',year:'numeric'});
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+
+  let html = '';
+
+  // empty cells before first day
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday  = ds === todayStr;
+    const isFuture = ds > todayStr;
+    const dayEntries = allEntries.filter(e => e.date === ds);
+    const pts = dayEntries.length;
+
+    let classes = 'cal-day';
+    if (isToday)  classes += ' today';
+    if (isFuture) classes += ' future';
+    if (pts > 0)  classes += ' has-points';
+
+    const dots = dayEntries.map(e =>
+      `<div class="cal-dot" style="background:${ACTIVITY_COLORS[e.activity]||'#94a3b8'}"></div>`
+    ).join('');
+
+    const clickAttr = pts > 0 ? `onclick="showDayPopup(event,'${ds}')"` : '';
+
+    html += `<div class="${classes}" ${clickAttr}>
+      <span class="cal-day-num">${d}</span>
+      ${pts > 0 ? `<span class="cal-day-pts">${pts}pt${pts>1?'s':''}</span>` : ''}
+      ${dots ? `<div class="cal-day-dot-row">${dots}</div>` : ''}
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function showDayPopup(event, dateStr) {
+  event.stopPropagation();
+  const popup = document.getElementById('dayPopup');
+  const dayEntries = allEntries.filter(e => e.date === dateStr);
+  if (!dayEntries.length) return;
+
+  let html = `<div class="popup-date">${formatDate(dateStr)}</div>`;
+  dayEntries.forEach(e => {
+    const icon = ACTIVITY_ICONS[e.activity] || '⭐';
+    const label = e.activity === 'Other' && e.note ? `${e.note}` : e.activity;
+    html += `<div class="popup-activity"><span class="popup-activity-icon">${icon}</span>${label}</div>`;
+  });
+  html += `<div class="popup-total">+${dayEntries.length} point${dayEntries.length>1?'s':''} earned</div>`;
+  popup.innerHTML = html;
+
+  // position near click
+  const rect = event.target.closest('.cal-day').getBoundingClientRect();
+  const pw = 220;
+  let left = rect.left + window.scrollX;
+  let top  = rect.bottom + window.scrollY + 6;
+  if (left + pw > window.innerWidth - 16) left = window.innerWidth - pw - 16;
+  popup.style.left = left + 'px';
+  popup.style.top  = top  + 'px';
+  popup.classList.add('visible');
+}
+
+// ── BREAKDOWN ─────────────────────────────────────────────────────────────────
+function renderBreakdown() {
+  const today = new Date();
+  const y = today.getFullYear(), m = today.getMonth();
+  const monthStr = `${y}-${String(m+1).padStart(2,'0')}`;
+  const monthEntries = allEntries.filter(e => e.date.startsWith(monthStr));
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+
+  const activities = Object.keys(ACTIVITY_ICONS);
+  const counts = {};
+  activities.forEach(a => counts[a] = 0);
+  monthEntries.forEach(e => { if (counts[e.activity] !== undefined) counts[e.activity]++; else counts['Other']++; });
+
+  const maxCount = daysInMonth; // max is once per day per activity
+
+  document.getElementById('breakdownTitle').textContent =
+    `📊 ${today.toLocaleString('default',{month:'long'})} breakdown`;
+
+  if (!monthEntries.length) {
+    document.getElementById('breakdownContent').innerHTML =
+      '<div style="text-align:center;color:var(--muted);padding:24px;font-size:0.88rem;">No points logged yet this month. Start adding!</div>';
+    return;
+  }
+
+  let html = '';
+  activities.forEach(a => {
+    const count = counts[a] || 0;
+    const pct = Math.round(count / maxCount * 100);
+    const color = ACTIVITY_COLORS[a] || '#94a3b8';
+    html += `<div class="breakdown-row">
+      <div class="breakdown-icon">${ACTIVITY_ICONS[a]}</div>
+      <div class="breakdown-label">${a}</div>
+      <div class="breakdown-track">
+        <div class="breakdown-fill" style="width:${pct}%;background:${color};"></div>
+      </div>
+      <div class="breakdown-count">${count}</div>
+    </div>`;
+  });
+  document.getElementById('breakdownContent').innerHTML = html;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function formatDate(ds) {
+  const [y,m,d] = ds.split('-');
+  return new Date(+y, +m-1, +d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+
+// Load any locally cached entries (useful when offline)
+function loadLocalCache() {
+  const cached = localStorage.getItem('hp_local_entries');
+  if (cached) {
+    try { allEntries = JSON.parse(cached); } catch(e) {}
+  }
+}
+
+// ── BOOTSTRAP ────────────────────────────────────────────────────────────────
+loadLocalCache();
+init();
+</script>
+</body>
+</html>
